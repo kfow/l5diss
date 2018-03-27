@@ -1,5 +1,242 @@
+\documentclass{mpaper}
+
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{listings}
+\usepackage[newfloat]{minted}
+\usemintedstyle{emacs}
+\usepackage{enumerate}
+\usepackage{enumitem}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newenvironment{codelisting}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Code Sample}
+
+% Use “\cite{NEEDED}” to get Wikipedia-style “citation needed” in document
+\usepackage{ifthen}
+\let\oldcite=\cite
+\renewcommand\cite[1]{\ifthenelse{\equal{#1}{NEEDED}}{\ensuremath{^\texttt{[citation~needed]}}}{\oldcite{#1}}}
+
+\newcommand{\remove}[1]{\textcolor{red}{#1}}
+
+\begin{document}
+
+\title{Smart Sensitivity Review}
+\author{Kelvin Fowler}
+\matricnum{2083905f}
+
+\maketitle
+\small{Note: Joint Honours - 40 Credits}
+
+\begin{abstract}
+\textbf{First, what is the problem that this paper tackles? }
+This paper presents a novel application of learning to rank with complex query formulations to the domain of information retrieval assisted sensitivity review. At The National Archives, archivists must cross reference potentially sensitive content with public domain information in order to identify what information is already known to the the public.
+This research presents a solution to assist this problem by forming queries from documents and automatically running them through an IR system.
+
+\textbf{Second, why is this an interesting problem?}
+
+\textbf{Third, what is the solution this paper proposes?}
+Extract named entities, temporal entities from text for use as features in a learned weighting model.
+
+\textbf{Finally, why is the proposed solution a good one?}
+Evaluation shows this works better than last year, is there other benchmarks that we can compare it to?
+\end{abstract}
+
+\section{Introduction} \label{sec:intro}
+% Problem, why important
+% Statement of contributions
+
+% It's in this section that we will introduce our terminology of target documents and source documents etc.
+Sensitivity review is a task carried out by The National Archives in the process of preparing documents for release to the general public. It involves ensuring these documents contain no information which could be considered dangerous \remove{example and detail}. Part of this process involves cross checking document content with public domain information, as sensitive information which is already available to the public can be deemed not sensitive. Increasingly the documents which require review are digital and these documents are being generated at an ever increasing scale due to new technologies~\cite{NEEDED}. As a result the current system of review must be improved to assist with this task as much as possible.
+
+This task lends itself well to the Information Retrieval space. Since we must retrieve relevant public domain documents given a potentially sensitive document.
+
+The intuition of our approach involves inspecting and tagging the prudent information in source documents. This included named entities and temporal entities. These were used to formulate complex queries issued on a collection of public domain new documents.
+
+% Defining Terminology
+Throughout this paper we will refer to documents which are being reviewed as \textbf{source documents} and public domain documents which are being retrieved as \textbf{target documents.} Thus, queries will be formed from \textbf{source documents}.
+
+% Research Questions from Proposal -- do we refer to proposal at all?
+
+Our contributions are thus:
+\begin{itemize}
+\item Demonstration of the capability to perform complex querying inside Terrier.
+\item Demonstration of proxy corpus to reduce expense of test collection.
+\item Demonstration that temporal information from within documents can be used as a good weak feature in learning to rank to improve precision at top document level.
+\item Understanding of learning to rank when using documents as queries.
+\end{itemize}
+
+The remainder of the paper will be structured as follows.
+In \S~\ref{sec:background} we discuss the background of the project including related literature and limitations.
+In \S~\ref{sec:complexquery}
+\S~\ref{sec:l2r} provides insight into our techniques for learning to rank, including what we deem to be interesting and potentially advantageous features.
+Details on our experimental setup are given in \S~\ref{sec:setup}, with our experimental results following in \S~\ref{sec:results}.
+Finally, we conclude with discussion and avenues for future work in \S~\ref{sec:conclusion}.
+
+\begin{enumerate}
+\item General description of the problem, motivation, relevance
+\item Background information, possibly including a literature survey
+\item Description of approach taken to solve the problem, including
+  high-level design and lower-level implementation details as appropriate
+\item Evaluation, qualitative or quantitative as appropriate
+\item Conclusion, including scope for future work
+\end{enumerate}
+
+\section{Background} \label{sec:background}
+Applying information to assist sensitivity review is an ongoing problem. There are several angles from which this has been tackled. Namely the use of automatic classification of ``sensitivities'' can be seen in work by McDonald et al~\cite{mcdonald2014towards}.
+
+% TECHNOLOGY ASSISTED REVIEW -- EDISCOVERY/ CLINTON EMAILS/ TRY TO FIND A FRESH NEW EXAMPLE
+% E-Discovery
+
+% Govt - http://www.nationalarchives.gov.uk/documents/technology-assisted-review-to-born-digital-records-transfer.pdf
+
+% Clinton Emails -- speed of review.
+In fact, this type of technology assisted review is becoming increasingly prevalent, featuring in news articles surrounding the 2016 U.S. Presidential Election~\footnote{\url{https://www.nytimes.com/2016/11/08/us/politics/hillary-clinton-donald-trump-fbi-emails.html}}. Technology allowed the F.B.I. to review 650,000 emails in a week through automatic classification and duplicate deletion.
+
+% 4th YEAR PROJECT
+This problem was tackled in part by a 4th year project at the University of Glasgow by us~\cite{DissertationKelvinFowler}. This lays the ground work for the more advanced research described in this paper. 
+Our previous method relied on the use of Named entities extracted from source documents in order to generate queries. The intuition was much the same as we described in \S~\ref{sec:intro}. There were however some key limitation in this work. Firstly, we extracted and tagged named entities only in a uni-gram manner. For example, given a document containing the name, ``Allen Hatcher'' the tokens \code{person\_allen} and \code{person\_hatcher} were produced. As such, we do not encode in queries that we seek documents only where ``Allen Hatcher'' is mentioned and not any other ``Allen'' or ``Hatcher''.
+The results of \cite{DissertationKelvinFowler} showed that the full source documents (stopped and stemmed) could be used as a query however this was too slow for practical use. Slightly less performant but far faster was the use of all named entities as a query. Taking the top 10 named entities through Tf-Idf analysis was also attempted. Using the subject line of the document as query was also attempted.
+This project also focussed on a UI for this assisted sensitivity review, which could be used in The National Archives.
+
+Identified as missing were attempts to factor temporal information in documents into the queries. 
+When dealing with sensitivities it is often important to consider the times of events. For example public domain articles about George Bush could refer to either Father or Son depending on the time period.
+
+\subsection{Time in Information Retrieval}
+As mentioned, time can be an important factor to consider in information retrieval, dependent on the task at hand. There are several technologies available for identification and resolution of temporal entities in documents such as Heideltime~\cite{strotgen2010heideltime} and SUTime~\cite{chang2012sutime}. This allows temporal expressions to be represented in a normalised format ideal for further manipulation and matching.
+
+Strötgen et al~\cite{strotgen2012identification} divide queries into a temporal part and textual part and examine how best to identify the most relevant temporal expressions in a document, both in general and with respect to a query. Of features they identify, value frequency is particularly relevant to us. \remove{calculate value frequency.}.
+
+Jatowt et al~\cite{jatowt2013estimating} describe a method for approximating the focus time of a given document, however this requires connection to a knowledge base which is beyond the scope of this project. It is, however an interesting concept which we take some inspiration from in our attempts to make use of temporal entities in documents.
+
+\subsection{Complex Queries}
+% What are they.
+Complex queries are IR queries which contain additional information than the plain text of regular queries. When producing a query from a large quantity of text it is useful to have these additional features as they can narrow a verbose query to be more targeted.
+
+Terrier~\cite{macdonald2012puppy} implements parts of the Indri Query Language~\cite{strohman2005indri} which defines some of these complex query operators.
+
+Lee et al~\cite{GeneratingQueriesLee12} use complex query operators in order to create queries from large arbitrary sections of text.
+% Give examples of what the operators are...
+
+\subsection{Learning to Rank}
+% Introduction
+Learning to rank (L2R) is a well used technique in information retrieval. It is a machine learning technique which learns how to rank documents in retrieval results in response to features and existing relevance data.
+Learning to rank takes a sample of documents retrieved using some initial step and then re-ranks these documents based on features calculated.
+% Do we want to describe the different types?
+
+% Do we want to describe the types of features?
+
+% Sampling
+Dang et al~\cite{dang2013two} discuss the sampling step of learning to rank, where we seek to retrieve as many relevant documents as possible (high recall) so that the second, learned reranking step can move as many relevant documents to high ranks as possible. Using this intuition we investigate which sampling set is the most effective.
+
+% Differentiate
+% Why are we different
+
+% Here are all the limitations
+\begin{enumerate}[label=\textbf{Limitation.\arabic*}, wide=\parindent]
+\item No use of time.
+\item Lacking test collection
+\item document to document time comparison
+\end{enumerate}
+
+% List and refer back to the limitations
+\section{Query Components}
+
+\subsection{Named Entities}
+% Identification
+
+% Analysis - Tf-Idf for example -- top relevant NE expressions.
+\subsection{Temporal Entities}
+% Identification and Resolution
+
+% Focus Time Calculations
+\subsection{Focus Time Calculations}
+In order to make use of the resolution of times in documents we opted to attempt to approximate focus times in documents. The intuition was that a target document was likely to be relevant in our task to a source document if they referred to similar times.
+Direct matching of temporal entities was unlikely to be successful since even to adjacent days resolve to different tokens, and we have no concrete way of partial matching of terms.
+Instead we devised several methods for the approximation of a documents focus time.
+\textbf{Median Focus Time} - in order to calculate the median focus time all temporal references in a document are converted to their epoch offset equivalent (milliseconds from Jan. 1st 1970).
+This collection was then sorted and the median date was taken to be the focus time.
+This focus time was used to create three terms, a focus day, month and year. This allows for different granularities of matching.
+Our approach is based on the intuition that if two documents produce median times of 16 June 1988 and 29th June 1999, then the fact that they both refer to June 1988 is still a good indicator of relevance.
+
+\textbf{Removal of Outliers} - we produced a variant of median focus time by first removing outliers from the collection of temporal entities in a document. This was done using the method which disgards data points more than 1.5x outside the interquartile range of the data~\cite{NEEDED}.
+\remove{Outliers dont heavily effect the median}
+
+\textbf{Value Frequency} - moving away from medians 
+Median focus time, resolve each temporal reference to epoch, sort and find median for document.
+
+% What else can we do with times
+\section{Complex Query Formulations} \label{sec:complexquery}
+Queries can be composed of several labelled sections which denote meaning and content. Further, queries can contain complex operators which allow the user or system to issue rules which a information retrieval system must follow. For example, these might be that query terms must appear within a certain number of terms of each other.
+Other uses are for describing synonyms (for example when someone searches for ``tea cup'' they may also receive results containing the term ``mug''.
+These complex query formulations were used extensively in the experimentation of this system.
+
+% Focus Time Matching
+
+\subsection{Named Entities}
+Sensitive documents contain named entities~\cite{NEEDED} \remove{is this true}, can perhaps do some analysis on the collection from last year to find out.
+
+\subsection{Temporal Entities}
+Can match on plain named entities - kind of pointless.
+Instead we attempted to calculate a focus time for each given document by investigating.
+
+K-medians clustering might be a better way of doing it --
+\subsection{Indri QL and Tagging}
+
+\section{Learning to Rank} \label{sec:l2r}
+\subsection{Features}
+term features
+phrase features
+proximity features
+Use validation data to prevent over-fitting
+
+LambdaMART - multiple additive regression trees, pointwise and listwise
+NDCG is taken into account
+
+\section{Experimental Setup} \label{sec:setup}
+In place of a full ground truth test collection we opted to generate a test collection from an existing ad-hoc trec collection. This allowed us to avoid the lengthy and costly operation of obtaining results from volunteers.
+
+This test collection was generated from ... using the existing topics and qrels provided by TREC.
+% Describe the use of the proxy test collection.
+
+% USE gnuplot for nice looking graphs
+
+\section{Experimental Results} \label{sec:results}
+\subsection{Baseline Results}
+As a baseline we conducted experiments by forming queries from the entire text of the document.
+Named entities were tagged and so were temporal entities.
+We altered the retrieval model in order to investigate which type of matching worked best for plain queries with no learning to rank steps or additional complexity.
+
+\subsection{Learning to Rank With Named Entities}
+The Indri query features present in Terrier allowed us to tag query terms as belonging to specific groups. As such we tagged named entities as their specific type.
+Then we defined features for learning to rank based on the retrieval performance of the subqueries under certain retrieval models.
+We also wished to investigate which type of named entities most effected the performance of our system.
+
+\subsection{Learning to Rank With Focus Times}
+
+\subsection{Learning to Rank With Combinations of Features}
+% Do we want explanations of 
+% Report the results in tables with graphs
+% This is likely where you would include the numpy analysis of features etc.
+
+\section{Conclusions} \label{sec:conclusion}
+We presented ...
+
+% Opportunities for Future Work.
+
+In the future we would like to incorporate knowledge base linking into the process in order to flesh queries out with additional details and synonyms for named entities. This could provide an excellent query expansion opportunity.
+
+\vskip8pt \noindent
+{\bf Acknowledgements.}
+I would like to thank my supervisors, Craig Macdonald and Graham McDonald for their guidance and patience during this project.
+\bibliographystyle{abbrv}
+\bibliography{bib}
+
+
+\end{document}
+
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\title{L5 Dissertation}
 \begin{document}
-(Type your content here.)
+\url{http://sigir.org/wp-content/uploads/2018/01/p032.pdf}
 \end{document}

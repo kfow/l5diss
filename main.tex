@@ -161,8 +161,18 @@ Our approach is based on the intuition that if two documents produce median time
 \textbf{Removal of Outliers} - we produced a variant of median focus time by first removing outliers from the collection of temporal entities in a document. This was done using the method which disgards data points more than 1.5x outside the interquartile range of the data~\cite{NEEDED}.
 \remove{Outliers dont heavily effect the median}
 
-\textbf{Value Frequency} - moving away from medians 
-Median focus time, resolve each temporal reference to epoch, sort and find median for document.
+\textbf{Value Frequency} - moving away from medians calculations this approach was inspired by \cite{strotgen2012identification} which identifies value frequency of temporal entities as being a good indicator for their importance.
+As such this method was used to produce an additional approximate ``focus time''.
+The method was as follow:
+
+For every temporal entity of day granularity, the number of references in the text to that date were counted and the specific day with the most references was stored as the focus day.
+Next every temporal entity with month granularity was counted and the most frequently occurring month was used as the focus month.
+
+Last the most frequently occurring year was tagged as the focus year.
+
+\remove{Give an example of the production of these focus times from a number of time references. Could kill 2 birds with one stone and display an example of the Heideltime process also.}
+
+These calculations also seek to give an indication of the most important temporal entities in the text also.
 
 % What else can we do with times
 \section{Complex Query Formulations} \label{sec:complexquery}
@@ -171,7 +181,6 @@ Other uses are for describing synonyms (for example when someone searches for ``
 These complex query formulations were used extensively in the experimentation of this system.
 
 % Focus Time Matching
-
 \subsection{Named Entities}
 Sensitive documents contain named entities~\cite{NEEDED} \remove{is this true}, can perhaps do some analysis on the collection from last year to find out.
 
@@ -194,6 +203,14 @@ NDCG is taken into account
 
 \section{Experimental Setup} \label{sec:setup}
 In place of a full ground truth test collection we opted to generate a test collection from an existing ad-hoc trec collection. This allowed us to avoid the lengthy and costly operation of obtaining results from volunteers.
+The method to produce this test collection was as follows.
+
+AP88 document corpus.
+\remove{which} Topic and Qrel set.
+
+Our task is to produce inter document relevance.
+
+When a document is relevant for a given topic, assume that if that document were a source document in our sensitivity review task, the the other documents which are relevant for that topic would be relevant target documents.
 
 This test collection was generated from ... using the existing topics and qrels provided by TREC.
 % Describe the use of the proxy test collection.

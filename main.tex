@@ -30,13 +30,15 @@
 \remove{Tone down emphasis on sensitivity review}
 \begin{abstract}
 % Intro to Problem
-Before documents are released to the public they must be reviewed for sensitivities. If a document's contents are already in the public domain then is can be released without the rigorous sensitivity review process.
-Cross checking document contents with public domain documents is currently undertaken manually in an insecure and cumbersome way.
+Before documents are released to the public they must be reviewed for sensitivities. If a document's contents are already in the public domain then this document can be released to the public without going through the rigorous sensitivity review process.
+Cross checking document contents with public domain documents is currently undertaken manually in an insecure and cumbersome way, involving users entering manual queries into public web search engines.
 An automatic system could feasibly formulate queries from documents and retrieve public domain documents for cross referencing.
-This query formulation from an arbitrary document is a difficult task.
+This query formulation from an arbitrary document is a difficult task, as these documents are potentially very long and contain much information.
 We propose to use the extraction of named entities and temporal entities as key features in an automatic query generation.
-We then use these terms in a complex query with a learning to rank strategy which can learn which sections of this query are the most important for this task.
-We evaluated this approach using a proxy test collection representative of the type of documents encountered in this task and found that our features show promise \remove{conclude}
+We then use these terms in a complex query with a learning to rank strategy to learn which sections of this query are the most important for this task.
+We evaluated this approach using a proxy test collection representative of the type of documents encountered in this task and found that our features show promise 
+
+\remove{\textbf{conclude}}
 % Why is it challenging
 % how do you propose to address (why should it work)
 % how evaluated
@@ -57,6 +59,20 @@ There are many reasons a document maybe be deemed sensitive\footnote{\url{http:/
 Part of this process involves cross checking document content with public domain information, as sensitive information which is already available to the public can be deemed not sensitive. 
 Increasingly the documents which require review are digital and these documents are being generated at an ever increasing rate due to new technologies~\cite{allan2014record}. 
 \remove{The National Archives also must decide which documents are worth keeping which in itself poses an interesting problem~\cite{moss2012have}, demonstrating further the scale of the these document collections.}
+
+
+%Insert an example -- table format?
+\begin{table*}[t]
+\centering
+\begin{tabular}{|p{8cm}|p{6cm}|}
+\hline
+Document Text & Potential Manual Query \\ \hline
+This is an example document blah blah blah blah blah blah
+& 1988 pubjab attack sikh gunmen khari sari
+\\ \hline
+\end{tabular}
+\caption{An Example of manually forming a query to retrieve public domain documents}
+\end{table*}
 
 As a result, the current system of review must be improved to assist with this task as much as possible. Currently, the task of public domain comparison is undertaken by archivists manually searching for related public domain documents using web search engines.  This is a tedious task and exposes potentially sensitive information to external services.
 
@@ -159,6 +175,7 @@ Dang et al~\cite{dang2013two} discuss the sampling step of learning to rank, whe
 
 \section{Overview of Approach}
 % DIAGRAM
+% Refer specifically to all of the limitations
 In this section we present a high level overview of the approach we intend to take in order to tackle the limitations from Section~\ref{sec:limitations}, in order to ...
 
 There is a lot of information in documents which could be used to form a query. It is not immediately obvious which parts of this information will produce the most effective query, as we have seen from the example in Table~\cite{NEEDED}. However, our approach involves the segmentation of queries into individual sections in order that a learning to rank strategy can determine which sections are most important for retrieval.
@@ -204,6 +221,9 @@ In order to effectively retrieve public domain documents we must decide which in
 This section will describe in detail the methods used for extracting these items and the rationale behind our approaches.
 
 \subsection{Named Entities}
+% WHY DO WE EXTRACT THESE
+% HOW DO WE EXTRACT THESE
+% CAN WE DO ANYTHING EXTRA
 In any given document, it is natural to seek to find out who the document is referring to. There is a notion that documents are often saying something about someone.
 These ``someones'' can be called named entities. 
 Methods exist for automatic extraction of named entities and the identification of which type of named entity is being used.
@@ -218,6 +238,9 @@ There is additional analysis we can perform on named entities.
 A good indicator of a named entities importance, for example, may be it's Tf-Idf score in the collection of source document.
 
 \subsection{Temporal Entities}
+% WHY DO WE EXTRACT THESE
+% HOW DO WE EXTRACT THESE
+% CAN WE DO ANYTHING EXTRA
 Temporal entities were resolved using the Heideltime temporal tagger. This allows us to identify temporal entities in text such as ``last Thursday'' and resolve this reference the specific date in question. To do this we must know the document creation date.
 It is a reasonable assumption that these specific times are not of great use in and of themselves, since they are so numerous and so granular that matching on them will not produce any interesting behaviour. We confirm this with results in Section~\ref{sec:results}. As such it seems that it would be helpful to perform some analysis on the temporal entities which occur in a document.
 
@@ -245,9 +268,9 @@ Median Focus Day 	& Constant 		& items  \\ \hline
 \end{tabular}
 \end{table*}
 
-
-% Focus Time Calculations
-\subsection{Focus Time Calculations}
+% WHY DO WE EXTRACT THESE
+% HOW DO WE EXTRACT THESE
+% CAN WE DO ANYTHING EXTRA
 In order to make use of the resolution of times in documents we opted to attempt to approximate focus times in documents. The intuition was that a target document was likely to be relevant in our task to a source document if they referred to similar times.
 Direct matching of temporal entities was unlikely to be successful since even to adjacent days resolve to different tokens, and we have no concrete way of partial matching of terms.
 Instead we devised several methods for the approximation of a documents focus time.
@@ -268,27 +291,32 @@ Last the most frequently occurring year was tagged as the focus year.
 \remove{Give an example of the production of these focus times from a number of time references. Could kill 2 birds with one stone and display an example of the Heideltime process also.}
 
 These calculations also seek to give an indication of the most important temporal entities in the text also.
+ 
+\subsection{Additional Terms}
+% WHY DO WE EXTRACT THESE
+We extract these because the provide valuable context.
 
-% What else can we do with times
-\section{Complex Query Formulations} \label{sec:complexquery}
+% HOW DO WE EXTRACT THESE
+They are the terms which are left over.
+We probably don't want to use them all.
+
+% CAN WE DO ANYTHING EXTRA
+We can calculate Tf-Idf scores on these terms to tell us how important they are.
+
+\section{Learning with Complex Queries}
+% WHY
+
+% HOW
+
+% ANYTHING ELSE INTERESTING
+
+\section{Complex Query Formulations} \label{sec:l2r}
+% Why do we want to use complex queries at all - for partitioning of the query into its component parts.
 Queries can be composed of several labelled sections which denote meaning and content. 
 Further, queries can contain complex operators which allow the user or system to issue rules which a information retrieval system must follow. For example, these might be that query terms must appear within a certain number of terms of each other.
 Other uses are for describing synonyms (for example when someone searches for ``tea cup'' they may also receive results containing the term ``mug''.
 These complex query formulations were used extensively in the experimentation of this system.
 
-% Focus Time Matching
-\subsection{Named Entities}
-
-Sensitive documents contain named entities~\cite{NEEDED} \remove{is this true}, can perhaps do some analysis on the collection from last year to find out.
-
-\subsection{Temporal Entities}
-Can match on plain named entities - kind of pointless.
-Instead we attempted to calculate a focus time for each given document by investigating.
-
-K-medians clustering might be a better way of doing it \remove{UNIMPLEMENTED}
-\subsection{Indri QL and Tagging}
-
-\section{Learning to Rank} \label{sec:l2r}
 \begin{table*}[t] \label{table:features}
 \centering
 \begin{tabular}{|p{4cm}|p{6cm}|p{4cm}|}

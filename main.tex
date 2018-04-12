@@ -191,6 +191,12 @@ With the introduction of Indri query language operators in Terrier 5, we are abl
 In learning to rank, we must define features. These features can must be scores that Terrier can calculate. Generally, pagerank might be used as a feature or another such score that we know about a document in response to query. Instead we define features which are only calculated on individual tagged sections of our query. See Table~\ref{table:features} for a list of the features we use in this research.
 
 Figure~\ref{fig:approach} summarises our approach.
+\begin{figure*}
+\begin{center}
+\includegraphics[scale=0.5]{5yp.png}
+\end{center}
+\caption{\label{fig:approach} The General Approach of Our System}
+\end{figure*}
 
 
 % List and refer back to the limitations
@@ -232,7 +238,7 @@ Named entities can be good indicators of who a document is speaking about.
 Given a document about a bombing the mentions of ``ISIS'' and ``Syria'' can differentiate this document from other bombing elsewhere.
 This intuition has encouraged us to use the extraction of named entities to improve query formulations.
 
-These named entities occur in specific locations in the text, we can keep track of their positions and use this to formulate complex queries, see Section~\ref{sec:complexquery}.
+These named entities occur in specific locations in the text, we can keep track of their positions and use this to formulate complex queries.
 
 There is additional analysis we can perform on named entities.
 A good indicator of a named entities importance, for example, may be it's Tf-Idf score in the collection of source document.
@@ -252,20 +258,12 @@ The second method uses value frequency in order to calculate a focus time. These
 
 \begin{table*}[t] \label{table:focustimes}
 \centering
-\begin{tabular}{|p{4cm}|p{6cm}|p{4cm}|}
+\begin{tabular}{|c|c|}
 \hline
-Temporal Entity 	& TimeX3 Representation  \\ \hline
-Person TF 			& TF Score for Person Named Entities 		& WMODEL\$person:Tf  \\ \hline
-Location TF 		& TF Score for Location Named Entities 		& items  \\ \hline
-Organisation TF 	& TF Score for Organisation Named Entities 		& items  \\ \hline
-Time Terms Constant & Constant WM Matching on Temporal Terms			& items  \\ \hline
-Vf Focus Year 		& Constant WM Matching on most frequently mentioned year. 		& items  \\ \hline
-Vf Focus Month 		& Constant WM Matching on most frequently mentioned month (YY-MM).  		& items  \\ \hline
-Vf Focus Day 		& Constant WM Matching on most frequently mentioned day (YY-MM-DD).  		& items  \\ \hline
-Median Focus Year 	& pBiL 		& items  \\ \hline
-Median Focus Month 	& pBiL 		& items  \\ \hline
-Median Focus Day 	& Constant 		& items  \\ \hline
+Temporal Entity 	& TimeX3 Representation  			\\ \hline
+Last Thursday 		& <TIMEX3 12/04/18>Last Thursday</TIMEX3> 		\\ \hline
 \end{tabular}
+\caption{Examples of Resolved Temporal Entities and Subsequent Calculated Focus Times}
 \end{table*}
 
 % WHY DO WE EXTRACT THESE

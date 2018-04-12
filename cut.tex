@@ -18,3 +18,35 @@ Mac OS & 10.7 & For people with more money than sense \\ \hline
 \end{center}
 \caption{\label{fig-eg}An example figure stretching over two columns}
 \end{figure*}
+
+\begin{enumerate}
+\item General description of the problem, motivation, relevance
+\item Background information, possibly including a literature survey
+\item Description of approach taken to solve the problem, including
+  high-level design and lower-level implementation details as appropriate
+\item Evaluation, qualitative or quantitative as appropriate
+\item Conclusion, including scope for future work
+\end{enumerate}
+
+\begin{center}
+\begin{table}[h]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% These feature lists do not contain other as a feature!
+% Purely a test on the reranking capabilities of named entities as features
+Feature Set	 			& MAP 			  & MRR  			& P@5 	      	  \\ \hline
+All w/ TF   			& 0.1376 		  & 0.5828    		& 0.3685          \\ \hline
+Persons TF				& 0.1432    	  & 0.6014    		& 0.3901          \\ \hline
+Organisations TF		& \textbf{0.1559} & 0.5871 			& 0.3784	      \\ \hline
+Locations TF 			& 0.1550 		  & 0.6267    		& \textbf{0.4289} \\ \hline
+Persons and Orgs TF 	& 0.1351 		  & 0.5568    		& 0.3475	      \\ \hline
+Persons and Locs TF 	& 0.1510 		  & \textbf{0.6280} & 0.4222	      \\ \hline
+Locations and Orgs TF 	& 0.1497 		  & 0.5913   	 	& 0.3851	      \\ \hline
+\end{tabular}%
+}
+\caption{Old results before we worked out sampling.}
+\label{ne_results}
+\end{table}
+\end{center}

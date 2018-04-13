@@ -72,6 +72,7 @@ This is an example document blah blah blah blah blah blah
 \\ \hline
 \end{tabular}
 \caption{An Example of manually forming a query to retrieve public domain documents}
+\label{table:example}
 \end{table*}
 
 As a result, the current system of review must be improved to assist with this task as much as possible. Currently, the task of public domain comparison is undertaken by archivists manually searching for related public domain documents using web search engines.  This is a tedious task and exposes potentially sensitive information to external services.
@@ -109,8 +110,8 @@ Our contributions are thus:
 
 The remainder of the paper will be structured as follows.
 In Section~\ref{sec:background} we discuss the background of the project including related literature and limitations.
-In Section~\ref{sec:complexquery} we explain the use of complex query formulations and operators in our research.
-Section~\ref{sec:l2r} provides insight into our techniques for learning to rank, including what we deem to be interesting and potentially advantageous features.
+In Section~\ref{sec:overview} we give a general overview of the approach we take.
+Sections~\ref{sec:components} and ~\ref{sec:l2r} discuss in more detail our techniques for the extraction of query components and the subsequent creation of complex queries for learning to rank.
 Details on our experimental set-up are given in Section~\ref{sec:setup}, with our experimental results following in Section~\ref{sec:results}.
 Finally, we conclude with discussion and avenues for future work in Section~\ref{sec:conclusion}.
 
@@ -131,6 +132,7 @@ More broadly, assisted sensitivity review comes under the banner of technology a
 In fact, this type of technology assisted review is becoming increasingly prevalent, featuring in news articles surrounding the 2016 U.S. Presidential Election~\footnote{\url{https://www.nytimes.com/2016/11/08/us/politics/hillary-clinton-donald-trump-fbi-emails.html}}. Technology allowed the F.B.I. to review 650,000 emails in a week through automatic classification and duplicate deletion.
 
 % 4th YEAR PROJECT
+% too long
 This problem was tackled in part by a 4th year project at the University of Glasgow by us~\cite{DissertationKelvinFowler}. This lays the ground work for the more advanced research described in this paper. 
 Our previous method relied on the use of named entities extracted from source documents in order to generate queries. The intuition was much the same as we described in Section~\ref{sec:intro}. There were, however, some key limitation in this work. Firstly, we extracted and tagged named entities only in a uni-gram manner. For example, given a document containing the name, ``Allen Hatcher'' the tokens \code{person\_allen} and \code{person\_hatcher} were produced. As such, we do not encode in queries that we seek documents only where ``Allen Hatcher'' is mentioned and not any other ``Allen'' or ``Hatcher''.
 The results of \cite{DissertationKelvinFowler} showed that the full source documents (stopped and stemmed) could be used as a query however this was too slow for practical use. Slightly less performant but far faster was the use of all named entities as a query. Taking the top 10 named entities through Tf-Idf analysis was also attempted. Using the subject line of the document as query was also attempted.
@@ -165,30 +167,33 @@ Dang et al~\cite{dang2013two} discuss the sampling step of learning to rank, whe
 
 \subsection{Limitations of Existing Approaches} \label{sec:limitations}
 % Here are all the limitations
-\begin{enumerate}[label=\textbf{Limitation.\arabic*}, wide=\parindent]
+\begin{enumerate}[label=\textbf{Limitation \arabic*}, wide=\parindent]
 \item To our knowledge the only previous attempt at assisting the public domain knowledge section of sensitivity retrieval was in our previous work in the L4 Project~\cite{DissertationKelvinFowler}. Thus, there is lack of information in the literature regarding this process.
 \item The previous project did not seek to use temporal information to assist retrieval, while the literature clearly suggests that this could provide an improvement to performance. 
 \item There is no clear gold standard test collection for this task, simply because it has not been attempted in previous literature.
-\item Lee et al~\cite{GeneratingQueriesLee12} is perhaps the closest work to what we seek to achieve here, however their approach to generating queries from arbitrary sections of text is dependent on features which seek to find a general importance of concepts from the given text. They do not use learning to rank in order to allow the system to decide which features are most important.
+\item Lee et al~\cite{GeneratingQueriesLee12} is perhaps the closest work to what we seek to achieve here, however their approach to generating queries from arbitrary sections of text is dependent on features which seek to find a general importance of concepts from the given text. They do not use learning to rank in order to allow the system to decide which features are most important for the given task.
 \item In the previous project named entities were not represented in way which maintained multi-term relationships.
 \end{enumerate}
 
-\section{Overview of Approach}
-% DIAGRAM
-% Refer specifically to all of the limitations
-In this section we present a high level overview of the approach we intend to take in order to tackle the limitations from Section~\ref{sec:limitations}, in order to ...
+\section{Overview of Approach} \label{sec:overview}
+In this section we present a high level overview of the approach we to take in order to tackle the limitations from Section~\ref{sec:limitations}.
 
-There is a lot of information in documents which could be used to form a query. It is not immediately obvious which parts of this information will produce the most effective query, as we have seen from the example in Table~\cite{NEEDED}. However, our approach involves the segmentation of queries into individual sections in order that a learning to rank strategy can determine which sections are most important for retrieval.
+% Lim 1 - Information in literature lacking, thats why we are doing it
+% This isnt really part of the approach.
 
-Creating these sectional queries means first extracting the key information from documents which we wish to turn into queries. We have seen that named entities are an intuitive choice from example and retrieval performance of named entity based queries from~\cite{DissertationKelvinFowler} reinforces this assumption.
+% Lim 2 - we didnt use temporal information, now we are gonna do that
+The events which are reported in documents and in news articles necessarily happen a certain time. Often, authors of these documents refer to these times within the text. Although it is natural for a human to understand a reference to ``Last Friday'' in a given body of text, this is not true for automatic analysis. In order to properly understand and make use of the temporal entities in documents, we extract and resolve these entities to a specific date. This directly addresses \textbf{Limitation 2} which discusses the lack of temporal information in our previous approach to this task.
 
-Additionally, queries have a temporal component to them, in order to narrow search results to specific temporal window. In a similar way to the extraction of named entities, we can extract temporal entities from text. We will use this temporal information in our queries. \remove{NEED MORE REASONING}.
+% Lim 3 - we used named entities badly, now we are gonna fix that
+Further, \textbf{Limitation 3} highlights the misuse of named entities. Our approach resolves this issue and correctly tags named entities while retaining n-gram relationships (for example, forenames and surnames are no longer split.)
 
-With these query components extracted, they must be formed into a comprehensive query which can be effectively passed to a learning to rank strategy.
+% other terms
 
-With the introduction of Indri query language operators in Terrier 5, we are able to tag terms in queries as belonging to specific categories, among using other operations.
+% Lim 4 - Learning method based on task rather than arbitrary features
+Following the extraction of terms from documents, we formulate these terms into a complex, partitioned query. This query has multiple sections, each tagged with the type of terms that section contains, for example there will be a section for each of persons, locations and organisations. Now ~\cite{GeneratingQueriesLee12} discuss using features such as existence of a term as a wikipedia title in order to approximate the importance of a chunk of text from a source document. This may provide some level of weighting, however as discussed in \textbf{Limitation 4} this does not use learning to rank in order to calculate task specific weights. We use learning to rank to automatically learn the importance of various features rather than calculating them prior to attempting the task. This is a key difference in our work in comparison to \cite{GeneratingQueriesLee12} which is on the surface approaching a similar problem.
 
-In learning to rank, we must define features. These features can must be scores that Terrier can calculate. Generally, pagerank might be used as a feature or another such score that we know about a document in response to query. Instead we define features which are only calculated on individual tagged sections of our query. See Table~\ref{table:features} for a list of the features we use in this research.
+% Lim 5 - Production of a proxy test collection
+The final limitation (\textbf{Limitation 5}) we address with this research is the lack of a test collection for this public domain comparison task. Although we produced a very small test collection in order to evaluate our level 4 project, there is not enough data to effectively learn any model regarding the importance of various features. As such we produce a proxy test collection using existing TREC topics and relevance judgements on public domain documents. A detailed description of this can be seen in Section~\ref{sec:setup}.
 
 Figure~\ref{fig:approach} summarises our approach.
 \begin{figure*}
@@ -200,7 +205,7 @@ Figure~\ref{fig:approach} summarises our approach.
 
 
 % List and refer back to the limitations
-\section{Query Components}
+\section{Query Components} \label{sec:components}
 In this section we describe the components that we extact from documents in order to formulate queries, including our use of named and temporal entities.
 \begin{table*}[t]
 \centering
@@ -292,73 +297,80 @@ These calculations also seek to give an indication of the most important tempora
  
 \subsection{Additional Terms}
 % WHY DO WE EXTRACT THESE
-We extract these because the provide valuable context.
+In addition to named and temporal entities there are many other terms in a document. These provide valuable context for the reader, and as we have seen from our example in Table~\ref{table:example} would generally be necessary in a query to produce high quality results.
 
 % HOW DO WE EXTRACT THESE
-They are the terms which are left over.
-We probably don't want to use them all.
+After identifying named entities and temporal entities we can simply identify these other terms as those which are left over. We can tag these as belonging to the ``other'' set.
 
 % CAN WE DO ANYTHING EXTRA
-We can calculate Tf-Idf scores on these terms to tell us how important they are.
+It is worth noting that not all of these terms will be valuable to us and so we use Tf-Idf in order to identify which terms are most important from a given document.
 
-\section{Learning with Complex Queries}
+\section{Learning with Complex Queries} \label{sec:l2r}
 % WHY
 
 % HOW
 
 % ANYTHING ELSE INTERESTING
 
-\section{Complex Query Formulations} \label{sec:l2r}
 % Why do we want to use complex queries at all - for partitioning of the query into its component parts.
 Queries can be composed of several labelled sections which denote meaning and content. 
 Further, queries can contain complex operators which allow the user or system to issue rules which a information retrieval system must follow. For example, these might be that query terms must appear within a certain number of terms of each other.
 Other uses are for describing synonyms (for example when someone searches for ``tea cup'' they may also receive results containing the term ``mug''.
 These complex query formulations were used extensively in the experimentation of this system.
 
-\begin{table*}[t] \label{table:features}
+\begin{table*}[t] 
 \centering
-\begin{tabular}{|p{4cm}|p{6cm}|p{4cm}|}
+\begin{tabular}{|p{4cm}|p{6cm}|}
 \hline
-Feature Name 		& Description  	& Representation \\ \hline
-Person TF 			& TF Score for Person Named Entities 		& WMODEL\$person:Tf  \\ \hline
-Location TF 		& TF Score for Location Named Entities 		& items  \\ \hline
-Organisation TF 	& TF Score for Organisation Named Entities 		& items  \\ \hline
-Time Terms Constant & Constant WM Matching on Temporal Terms			& items  \\ \hline
-Vf Focus Year 		& Constant WM Matching on most frequently mentioned year. 		& items  \\ \hline
-Vf Focus Month 		& Constant WM Matching on most frequently mentioned month (YY-MM).  		& items  \\ \hline
-Vf Focus Day 		& Constant WM Matching on most frequently mentioned day (YY-MM-DD).  		& items  \\ \hline
-Median Focus Year 	& pBiL 		& items  \\ \hline
-Median Focus Month 	& pBiL 		& items  \\ \hline
-Median Focus Day 	& Constant 		& items  \\ \hline
+Feature Name 		& Description  \\ \hline
+Person TF 			
+& TF Score for Person Named Entities 		\\ \hline
+Location TF 		
+& TF Score for Location Named Entities 		\\ \hline
+Organisation TF 	
+& TF Score for Organisation Named Entities  \\ \hline
+Time Terms Constant 
+& Constant WM Matching on Temporal Terms    \\ \hline
+Vf Focus Year 		
+& Constant WM Matching on most frequently mentioned year. \\ \hline
+Vf Focus Month 		
+&Constant WM Matching on most frequently mentioned month (YY-MM). \\ \hline
+Vf Focus Day 		
+& Constant WM Matching on most frequently mentioned day (YY-MM-DD).\\ \hline
+Median Focus Year 	
+& pBiL 		  \\ \hline
+Median Focus Month 	
+& pBiL 		  \\ \hline
+Median Focus Day 	
+& Constant 	  \\ \hline
 \end{tabular}
+\caption{Features Used in this Paper}
+\label{table:features}
 \end{table*}
+
 Our approach is heavily centred around the subsequent use of learning to rank following the generation of complex queries.
 Although we can generate these queries it is not immediately clear which sections of the queries are the most important for this public domain retrieval task.
 As such, if we define our feature lists for learning to rank taking this partitioning into effect we can begin to understand what is important.
 Learning to rank also allows the system to infer complex relationships between sections of queries that we may not understand.
 
 \subsection{Sampling}
-Since learning to rank is used to rerank the top k documents based on a certain set of features, it is optimal that this set of documents that is being reranked contains the highest possible number of relevant documents.
+Since learning to rank is used to re-rank the top k documents based on a certain set of features, it is optimal that this set of documents that is being re-ranked contains the highest possible number of relevant documents.
 We aim to maximise recall at the initial stage of learning to rank so that upon reranking based on features we can promote as many relevant documents as possible.
 \remove{refer to literature which talks about maximising the recall of sampling}
 
 \textbf{Why cant we just retrieve all documents and calculate feature scores on every single one}
+\remove{some time data to say its too slow to do this}
 It is possible to achieve 100\% recall simply by retrieving all documents, however the calculation of feature scores across this amount of documents would take far too long for our needs. Why? Because we want fast retrieval~\cite{NEEDED} and people are only willing to wait so long on queries.
+
 
 \subsection{Features}
 The use of the Indri query language allowed us to define feature lists which used different retrieval models for individual sections of a query. For example we may have a feature which is the Tf score for only the person named entities in the text.
 
-Named entities - why TF? There is data to support this~\cite{NEEDED}
-
 term features
 phrase features
 proximity features
-Use validation data to prevent over-fitting
 
-LambdaMART - multiple additive regression trees, pointwise and listwise
-NDCG is taken into account
 
-\remove{need a diagram here explaining the method}
 
 \section{Experimental Setup} \label{sec:setup}
 This section will describe the steps taken to evaluate our system. We describe the test collections we use as well as the learning to rank configuration.
@@ -384,7 +396,6 @@ The method described below for generating a test collection from existing topics
 In place of a full ground truth test collection we opted to generate a test collection from an existing ad-hoc TREC collection. This allowed us to avoid the lengthy and costly operation of obtaining results from volunteers.
 The method to produce this test collection was as follows.
 
-\remove{note that there is actually an additional topic set you could use for this 101-150, but we dont have time to go down this route}
 Associated Press 1988 document corpus from TIPSTER disk 2.
 TREC-1 ad hoc qrels (document set is TIPSTER disks 1\&2).
 Our document set is only the AP88 set so if we remove all of the relevance judgements from other documents sets we reduce the numbers of qrels greatly.
@@ -397,14 +408,9 @@ If a document D was deemed relevant then a new qrels file was created.
 For Q\_D (query made from document D), the following documents are deemed relevant.
 All documents RD\\\{D\} which are relevant for the original topic T, with the document D removed so as to avoid self reference. A document can not be relevant for the query generated from itself. This caveat allowed us to avoid any additional complex indexing strategies.
 
-\remove{which} Topic and Qrel set.
-
-Our task is to produce inter document relevance.
+The topic set is the TREC-1 ad-hoc topics 51-100, with corresponding relevance judgements.
 
 When a document is relevant for a given topic, assume that if that document were a source document in our sensitivity review task, the the other documents which are relevant for that topic would be relevant target documents.
-
-This test collection was generated from ... using the existing topics and qrels provided by TREC.
-% Describe the use of the proxy test collection.
 
 % Explain the algorithm, write on paper to get right first.
 \begin{algorithm}
@@ -425,13 +431,18 @@ In order to prevent over-fitting to training data during learning to rank we par
 This was done with a 60/20/20 ratio.
 The splitting was performed by partitioning the initial topic set rather than the proxy test collection \remove{WHY?}.
 
+LambdaMART - multiple additive regression trees, pointwise and listwise
+NDCG is taken into account
+
+Our learning to rank model is the Jforests implementation of LambdaMART  which uses multiple additive regression trees and is a combination of pointwise and listwise learning to rank approaches.~\cite{NEEDED}
+
 \subsection{What are we looking for}
-Likely, our strongest feature is the one which increases MAP the most, what if none of them increase MAP! This will be the feature sends relevant docuements in the k sized sample towards the top. (map)
+Likely, our strongest feature is the one which increases MAP the most, what if none of them increase MAP! This will be the feature sends relevant documents in the k sized sample towards the top. (map)
 We may have some much weaker features which alter the rankings of the top few documents. These are also important as they will directly effect the results that are looked at first during manual inspection. (p.5 and mrr).
 
 
 \section{Experimental Results} \label{sec:results}
-Our experiments are conducted with references to the following research questions:
+Our experiments are conducted with reference to the following research questions:
 \begin{enumerate}[label=\textbf{RQ.\arabic*}]
 \item How can we maximise recall at the sampling step of retrieval to achieve the best results using learning to rank.
 \item What information in source documents is most important for the retrieval of public domain documents containing information in the source document.

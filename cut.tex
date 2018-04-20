@@ -1,5 +1,14 @@
 using a data-driven approach -- oft
 
+% Sensitivity review is a task carried out by government departments in the process of preparing documents for release to the general public. 
+% If a document is deemed to contain sensitive information then it may be withheld or redacted (this can also occur for other reasons)~\footnote{\url{https://ico.org.uk/for-organisations/guide-to-freedom-of-information/refusing-a-request/}}.
+% % Here you appear to say the same thing twice.
+% There are many reasons a document maybe be deemed sensitive\footnote{\url{http://www.legislation.gov.uk/ukpga/2000/36/part/II}}, however some examples are documents containing information which could negatively affect international relations or documents containing information which could put members of the armed or security forces at risk.
+
+% Part of this process involves cross checking document content with public domain information,  
+% Increasingly the documents which require review are digital and these documents are being generated at an ever increasing rate due to new technologies~. 
+% \remove{The National Archives also must decide which documents are worth keeping which in itself poses an interesting problem~\cite{moss2012have}, demonstrating further the scale of the these document collections.}
+
 \begin{table}
 \begin{tabular}{l||c||p{2cm}}
 \emph{Operating System} & \emph{Version} & \emph{Verdict} \\ \hline \hline
@@ -48,5 +57,41 @@ Locations and Orgs TF 	& 0.1497 		  & 0.5913   	 	& 0.3851	      \\ \hline
 }
 \caption{Old results before we worked out sampling.}
 \label{ne_results}
+\end{table}
+\end{center}
+
+
+\begin{center}
+\begin{table}[h]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Retrieval Model	 		& MAP 			  	& MRR  			& P@5 	      	  \\ \hline
+DPH	  					& 0.1727 		  	& 0.6406    	& 0.4347          \\ \hline
+BM25					& 0.1824    	  	& 0.6304    	& 0.4277          \\ \hline
+TF-IDF					& 0.1787 			& 0.6310 		& 0.4257	      \\ \hline
+PL2 					& 0.1798 		  	& 0.6271    	& 0.4195 		  \\ \hline
+TF 						& 0.0716 		  	& 0.3989    	& 0.2245	      \\ \hline
+\end{tabular}%
+}
+\caption{Basic Textual Query Results Using Different Models}
+\label{plain_results}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table}[h]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Retrieval Model	 		& MAP 			  	& MRR  			& P@5 	      	  \\ \hline
+DPH	  					& 0.1737 		  	& 0.6410    	& 0.4335          \\ \hline
+DPH w/ First 100		& 0.1061    	  	& 0.5456    	& 0.3286          \\ \hline
+\end{tabular}%
+}
+\caption{Index with no temporal resolution or named entity recognition, using full document text as queries.}
+\label{plain_index_plain_results}
 \end{table}
 \end{center}

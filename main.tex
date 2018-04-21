@@ -12,7 +12,6 @@
 \newenvironment{codelisting}{\captionsetup{type=listing}}{}
 \SetupFloatingEnvironment{listing}{name=Code Sample}
 
-% Use “\cite{NEEDED}” to get Wikipedia-style “citation needed” in document
 \usepackage{ifthen}
 \let\oldcite=\cite
 \renewcommand\cite[1]{\ifthenelse{\equal{#1}{NEEDED}}{\ensuremath{^\texttt{[citation~needed]}}}{\oldcite{#1}}}
@@ -28,47 +27,34 @@
 \maketitle
 \small{Note: Joint Honours - 40 Credits}
 \begin{abstract}
-% Intro to Problem
-% Why is it challenging
-% how do you propose to address these challenges (and why should it work)
-% how did you evaluate it
-% what did you find
-% conclusions
-
-\remove{make clear that a human has to do this manually}
-
 Government documents must be reviewed for sensitivities before they are released to the public. If the information within a document is already in the public domain then this document can be released to the public without going through a more rigorous sensitivity review process, as no new information will be being released.
-The cross checking of document contents with public domain documents is \remove{reportedly} currently undertaken manually in an insecure and cumbersome way, involving human reviewers entering manual queries into public web search engines.
+The cross checking of document contents with public domain documents is currently undertaken manually in an insecure and cumbersome way, involving human reviewers entering manual queries into public web search engines.
 An automatic system could feasibly formulate effective queries from documents and retrieve public domain documents for cross referencing. 
 It is, however, difficult to replicate the way a human might form an effective query from reading a document, as these documents are potentially very long and contain much information.
 We propose to use the extraction of named entities and temporal entities as key features in an automatic query generation.
 We propose to use these extracted entities in a complex query with a learning to rank approach to learn which sections of this query are the most important for this task.
-We evaluated this approach using a proxy test collection representative of the type of documents encountered in this task and found that none of the features we defined showed any significant impact on results, despite promising feature distributions on training data. Multiple features degraded results due to noise.
+We evaluated this approach using a proxy test collection representative of the type of documents encountered in this task and found that none of the features we defined showed any improvement against a defined baseline.
 We did however find that results were improved by simply using the top 100 terms weighted under TF-IDF to form a query.
-We evaluated our methods on a collection of government documents, with similar findings. This leads us to the conclusion that stronger features need to be investigated for this task.
-\remove{\textbf{conclude}}
-
+We evaluated our methods on a collection of government documents, with similar findings of reduced precision upon applying a learned model. This leads us to the conclusion that stronger features need to be investigated for this task and more analysis could have been done to predict the failure of our features.
 \end{abstract}
 
 \section{Introduction} \label{sec:intro}
-% Mention TNA in this first paragraph, understand the task, why are TNA even involved
 Government departments have a responsibility to prevent sensitive information from being released to the public. Some information in government documents already exists in the public domain. If a document contains only that information which is already in the public domain then the full sensitivity review process may be skipped. This type of review can occur when a government document must be transferred to the public domain either due to the time limitations imposed by The Public Records Act~\cite{publicrecords} or because of a Freedom of Information Request, in line with The Freedom of Information Act~\cite{freedominformation}.
 We want this identification of public domain information to be as efficient and effective as possible to reduce the need for in-depth sensitivity review.
 
-As it stands the process for public domain comparison is cumbersome and insecure with reviewers having to manually enter queries into public search engines in order to find public domain documents~\cite{NEEDED}. This is a slow process and exposes potentially sensitive information in queries to external search services. Automation could help improve this process with faster and more effective retrieval of results. In addition, the use of an offline and local corpus of public domain documents removes the security concerns surrounding the inadvertent release of sensitive information. To compound the problem the scale of documents which require review is ever increasing due to new technologies~\cite{allan2014record}, making the introduction of assistive technology all the more timely.
+As it stands the process for public domain comparison is cumbersome and insecure with reviewers having to manually enter queries into public search engines in order to find public domain documents to cross reference with the document under review. This is a slow process and exposes potentially sensitive information in queries to external search services. Automation could help improve this process with faster and more effective retrieval of results. In addition, the use of an offline and local corpus of public domain documents removes the security concerns surrounding the inadvertent release of sensitive information. To compound the problem the number of documents which require review is ever increasing due to new technologies~\cite{allan2014record}, further motivating the introduction of assistive technology.
 
-%Insert an example -- table format?
 \begin{table*}[t]
 \centering
-\begin{tabular}{|p{8cm}|p{6cm}|}
+\begin{tabular}{|p{8cm}|p{6cm}|} 
 \hline
 Document Text & Potential Manual Query \\ \hline
-A federal appeals court has rejected \textbf{Democratic} presidential candidate \textbf{Michael Dukakis'} attempt to use his power as governor to block a \textbf{Massachusetts} National Guard training mission in \textbf{Central America}.
-   The \textbf{1st U.S. Circuit Court of Appeals} issued a one-sentence order \textbf{Tuesday} affirming a May 6 decision by \textbf{U.S. District} Judge \textbf{Robert Keeton}, who upheld federal supremacy over the National Guard.
+A federal appeals court has rejected Democratic presidential candidate Michael Dukakis' attempt to use his power as governor to block a Massachusetts National Guard training mission in Central America.
+   The 1st U.S. Circuit Court of Appeals issued a one-sentence order Tuesday affirming a May 6 decision by U.S. District Judge Robert Keeton, who upheld federal supremacy over the National Guard.
    ``Having examined the briefs of the parties ... and having had the benefit of oral argument, we affirm the judgement on the basis stated in the district court's well-reasoned opinion,'' the appeals court said.
-   \textbf{Dukakis} sued in January to block the assignment of 13 public relations specialists in the \textbf{Massachusetts} Guard to \textbf{Honduras} and \textbf{Panama} for two weeks in \textbf{May} because of his opposition to \textbf{Reagan} administration policies in the region.
-   In his presidential campaign, \textbf{Dukakis} has denounced the administration for its ``failed and illegal'' policy of supporting \textbf{Nicaraguan} rebels, and he said sending Guard troops to the region was an attempt to intimidate \textbf{Nicaragua}.
-   \textbf{Dukakis}, who was campaigning \textbf{Tuesday} in \textbf{California} and \textbf{Colorado}, had no immediate comment on the appellate decision. A press aide, \textbf{Steven Crawford}, said the governor was disappointed that the court chose not to uphold the ``important principle'' of state authority. ...
+   Dukakis sued in January to block the assignment of 13 public relations specialists in the Massachusetts Guard to Honduras and Panama for two weeks in May because of his opposition to Reagan administration policies in the region.
+   In his presidential campaign, Dukakis has denounced the administration for its ``failed and illegal'' policy of supporting Nicaraguan rebels, and he said sending Guard troops to the region was an attempt to intimidate Nicaragua.
+   Dukakis, who was campaigning Tuesday in California and Colorado, had no immediate comment on the appellate decision. A press aide, Steven Crawford, said the governor was disappointed that the court chose not to uphold the ``important principle'' of state authority. ...
 &
 Michael Dukakis Massachusetts National Guard 1988
 \\ \hline
@@ -78,17 +64,17 @@ Michael Dukakis Massachusetts National Guard 1988
 \end{table*}
 
 The task of retrieving public domain documents relevant to the contents of a given document can be seen from an Information Retrieval (IR) perspective.
-We wish to formulate a query from a government document which can effectively and efficiently retrieve related public domain documents, in order that a manual reviewer can compare the retrieved documents.
+We wish to formulate a query from a government document which can effectively and efficiently retrieve related public domain documents, in order that a manual reviewer can compare the retrieved documents to the government document.
 Entering a full document as a query can be very slow, which is  a potential problem for this type of assisted review~\cite{DissertationKelvinFowler}.
 The question then is how to formulate an effective query from a given government document.
 
 In this paper we describe techniques for document analysis which produce such queries for a given government document and issue them to search a set of public domain documents.
 These government documents are often reporting events to others, and so contain references to people, places and organisations. They also generally focus on a specific time. Intuitively these are important aspects of any document and give the reader a clear idea of who and what a document is referring to.
 
-In Table~\ref{table:example} we see a short sample of a document and an example of a query a human might form in order to find related public domain documents. You will notice the use of temporal and named entities in this query. This query generation is what we wish to automate.
+In Table~\ref{table:example} we see a short sample of a document and an example of a query a human might form in order to find related public domain documents. You will notice the use of temporal and named entities in this query. This type of query generation is what we wish to automate.
 
 Following this intuition, our approach focusses on named entities (people, places and organisations) and temporal entities (specific text references to dates), while also considering the other important terms in a document which provide valuable context.
-These terms are split into a system of subqueries in order that a learning to rank approach can learn with supervision which sections are most important in the retrieval of relevant public domain documents. Learning to rank requires a large amount of training data to learn appropriate weightings for query features. We do not have a large collection of government documents with relevance judged public domain documents and so we produced and use a proxy test collection generated from an existing TREC ad-hoc test collection\footnote{\url{https://trec.nist.gov/}}. This serves the purpose of providing training data and preliminary test queries however our approach is then evaluated on a small collection of government documents with known relevant public domain documents. This allows us to verify that our general approach works in the specific task we aim to solve.
+These terms are split into a system of subqueries in order that a learning to rank approach can learn with supervision which sections are most important in the retrieval of relevant public domain documents. Learning to rank requires a large amount of training data to learn appropriate weightings for query features. We do not have a large collection of government documents with relevance judged public domain documents and so we produced and use a proxy test collection generated from an existing TREC ad-hoc test collection\footnote{\url{https://trec.nist.gov/}}. This proxy test collection serves the purpose of providing training data and preliminary test queries however our approach is then evaluated on a small collection of government documents with known relevant public domain documents. This allows us to verify that our general approach works in the specific task we aim to solve.
 
 The goal of this paper is to provide a retrieval technique that can assist the manual process of public domain comparison in sensitivity review.
 We do not seek to replace the manual aspect of this task and in fact archivists have made clear that they would be reluctant to trust technology alone~\cite{gollins2014using}.
@@ -96,13 +82,11 @@ We do not seek to replace the manual aspect of this task and in fact archivists 
 % Defining Terminology
 Throughout this paper we will refer to documents which are being reviewed as \textbf{source documents} and public domain documents which are being retrieved as \textbf{target documents.} Thus, queries will be formed from \textbf{source documents}.
 
-% ARE YOU MAKING ANY WILD CLAIMS HERE?
-\remove{Revisit these contributions and ensure they are in line with the abstract}
 Our contributions are as follows:
 \begin{itemize}
 \item We propose a novel method for using complex query operators and learning to rank to implicitly learn the most important sections of queries generated from source documents in order to retrieve target documents.
-\item We generate a proxy test collection using existing relevance judgements in order to obtain data for learning an effective model.
-\item We contribute to the ongoing research surrounding the improvement of document review in government with an improved system for the ranking of public domain documents in the public domain comparison task.
+\item We generate a proxy test collection using existing relevance judgements in order to obtain data for learning a model.
+\item We contribute to the ongoing research surrounding the improvement of document review in government.
 \item We identify that more research is needed to effectively define features for use in learning to rank to improve queries in this research area.
 \end{itemize}
 
@@ -148,13 +132,16 @@ To our knowledge, this is the only other work which has attempted this task.
 
 \subsection{Named Entities}
 In addition to the performance of the named entity query in the L4 project there is other literature which suggests that named entities can be helpful in information retrieval tasks.
+
 For example, named entities have been used in new event detection by Kumaran et al~\cite{kumaran04text}, who discuss when to use named entities in reference to news articles, finding that careful use of named entities in different situations can improve new event detection.
 
-\remove{could have another example}
+Khalid et al~\cite{khalid2008impact} also see improvement in the domain of question answering when identifying named entities.
+
+Clearly then, named entities can be an important addition to information retrieval systems in various tasks.
 
 \subsection{Time in Information Retrieval}
 % link temporal documents to project
-As mentioned above, time can be an important factor to consider in information retrieval, dependent on the task at hand. There are several technologies available for identification and resolution of temporal entities in documents such as Heideltime~\cite{strotgen2010heideltime} and SUTime~\cite{chang2012sutime}. These allow temporal expressions to be represented in a normalised format ideal for further manipulation and matching. These temporal extraction techniques are used on both source and target documents to identify temporal entities.
+Time can be an important factor to consider in information retrieval, dependent on the task at hand. There are several technologies available for identification and resolution of temporal entities in documents such as Heideltime~\cite{strotgen2010heideltime} and SUTime~\cite{chang2012sutime}. These allow temporal expressions to be represented in a normalised format, such as TimeX3 from TimeML~\footnote{\url{http://www.timeml.org/}}, ideal for further manipulation and matching. These temporal extraction techniques are used on both source and target documents to identify temporal entities.
 
 Str{\"o}tgen et al~\cite{strotgen2012identification} divide queries into a temporal part and textual part and examine how best to identify the most relevant temporal expressions in a document, both in general and with respect to a query. Of features they identify, value frequency of temporal entities is particularly relevant to us. Value frequency simply counts the occurrences of different temporal entities, assuming those mentioned most are more important. We use the value frequency approach of~\cite{strotgen2012identification} to calculate one variant of focus time when analysing documents.
 
@@ -163,39 +150,45 @@ Jatowt et al~\cite{jatowt2013estimating} describe a method for approximating the
 Given the literature surrounding time in information retrieval, the omission of this from our approach in the L4 Project was a clear limitation.
 
 \subsection{Complex Queries}
-In IR, we are not limited to classic bag-of-words queries and often, beyond what is visible to the user, queries are represented in a more complicated manner. For example, query expansion is described by Xu et al~\cite{xu96query} which adds additional terms to the query by examining documents returned by the original query. Additionally, Metzler and Croft~\cite{metzler2005markov} discuss identifying if adjacent query terms have relationships and factoring this into the retrieval model. Further, Bendersky et al~\cite{bendersky2010learning} learn concept importance in queries using markov random fields.
+In IR, we are not limited to classic bag-of-words queries and often, beyond what is visible to the user, queries are represented in a more complicated manner. For example, query expansion is described by Xu et al~\cite{xu96query} which adds additional terms to the query by examining documents returned by the original query. Additionally, Metzler and Croft~\cite{metzler2005markov} discuss identifying if adjacent query terms have relationships and factoring this into the retrieval model. Further, Bendersky et al~\cite{bendersky2010learning} learn concept importance in queries using markov random fields, altering the query accordingly.
 
-Jones et al~\cite{jones2006generating} suggest replacing user queries and Macdonald et al~\cite{Macdonald:2017:EES:3077136.3080827} discuss rewriting user queries in order to improve efficiency.
+Macdonald et al~\cite{Macdonald:2017:EES:3077136.3080827} discuss rewriting user queries in order to improve efficiency, which other approaches often degrade.
 % Jan Pederson -  Jan Pederson. 2010. Query Understanding at Bing. In Invited Talk, SIGIR 2010, Industry Day
 
-Most relevant to us is a way of representing queries as consisting of several distinct sections. This segmentation is possible with tagging which is available in Terrier~\cite{macdonald2012puppy}. In addition to tagging, there are other operations which complex query languages, such as the Indri Query Language~\cite{strohman2005indri}, support. An example is query term proximity limitations. There are many such operators and a list of examples can be seen on the Indri website~\footnote{\url{http://lemurproject.org/lemur/IndriQueryLanguage.php}}
+Most relevant to us is a way of representing queries as consisting of several distinct sections. This segmentation is possible with tagging which is available in Terrier~\cite{macdonald2012puppy}. In addition to tagging, there are other operations which complex query languages, such as the Indri Query Language~\cite{strohman2005indri}, support. An example is query term proximity limitations. There are many such operators and a list of examples can be seen on the Indri website~\footnote{\url{http://lemurproject.org/lemur/IndriQueryLanguage.php}}.
 
-Lee et al~\cite{GeneratingQueriesLee12} use complex query operators in order to create queries from large arbitrary sections of text. Specifically Lee et al use these complex query operators to weight sections of text they have extracted from the selected text. The features Lee et al use to weight sections of text are calculated before retrieval and include examples such as frequency of occurrence in query logs. These features are not specific to the retrieval task being performed, limiting their performance~\cite{NEEDED}. The novelty of our work is the scoring of subqueries using the implicit weights learned during learning to rank, rather than a predetermined assignment. 
+Lee et al~\cite{GeneratingQueriesLee12} use complex query operators in order to create queries from large arbitrary sections of text. Specifically Lee et al use these complex query operators to weight sections of text they have extracted from the selected text. The features Lee et al use to weight sections of text are calculated before retrieval and include examples such as frequency of occurrence in query logs. These features are not specific to the retrieval task being performed.
 
-%% Novelty, this is it in a nutshell, this is what is great about this work, make sure you speak about it properly and explain why it's a limitation
+The novelty of our work is the scoring of subqueries using the implicit weights learned during learning to rank, rather than a predetermined assignment as in~\cite{GeneratingQueriesLee12}.
+
+\begin{figure*}[t]
+\begin{center}
+\includegraphics[scale=0.5]{5yp.png}
+\end{center}
+\caption{The Stages Involved in Producing A Learned Model}
+\label{fig:approach} 
+\end{figure*}
 
 \subsection{Learning to Rank}
-Learning to rank (L2R) is a well used machine learning technique in information retrieval. It works by reranking a pool of documents based on various defined features. This pool of documents is produced using a known, well performing, simple retrieval technique, such as BM25.
-Given training data (relevance judgements) and a feature list, the learning to rank process produces a learned model which can be applied to future results.
-Macdonald et al~\cite{macdonald2013whens} give a clear explanation of the various methods and techniques used in learning to rank.
+Learning to rank (L2R) is a well used machine learning technique in information retrieval. Macdonald et al~\cite{macdonald2013whens} give a clear explanation of the various methods and techniques used in learning to rank.
 
-\remove{A Number of documents are reranked, see whens and hows~\cite{macdonald2013whens}}
+In summary, learning to rank uses existing relevance judgements on a collection of queries and documents to learn a ranking strategy based on defined features. It works by reranking a pool of documents based on various defined features.
 
 Features defined for learning to rank are usually separated into 3 distinct categories, query dependent, query independent and query features.
 Query independent features could be PageRank~\cite{brin1998anatomy} or any other score calculated independent of the issued query. Query features do not depend at all on potentially retrieved documents and seek to learn how to alter retrieval methods based purely on the type of query being issued.
 In this work we define only query dependent features, which are calculated based on information in both the query and a given document.
 
+These features are calculated on a sample of documents which is generally retrieved using a query under a known, well performing, simple retrieval model. This initial sample of retrieved documents is cut off at a value $k$ and the feature scores are calculated for these top $k$ documents~\cite{macdonald2013whens}. The size of this sample can be altered. 
 Dang et al~\cite{dang2013two} discuss the sampling step of learning to rank, where we seek to retrieve as many relevant documents as possible (high recall) so that the second, learned reranking step can move as many relevant documents to high ranks as possible. Using this intuition we investigate which sampling set is the most effective for our task.
 
-\remove{give a further example, with query dependent features which performs well}
-% An example of learning to rank using query dependent features
+For example, Qin et al~\cite{Qin2010letor} define query dependent features such as calculating the BM25 score of only the abstract of a document with respect to a query.
 
-% Clearly then, learning to rank can be used in a wide variety of information retrieval tasks to improve performance. The lack of l2r in our previous approach is a clear limitation.
+Clearly then, learning to rank can be used in a wide variety of information retrieval tasks to improve performance and the lack of learning to rank in our previous approach is a clear limitation.
 
 
 % Make these limitations very clear to the reader by using the same language above and below 2.1 - 2.5
 \subsection{Limitations of Existing Approaches} \label{sec:limitations}
-As discussed above there are several key limitations of the literature in existing approaches. Here we list these limitations specifically for later reference.
+We have shown that previous approaches contain limitations, reinforced by findings in related literature. Here we list and label these limitations for reference.
 
 \begin{enumerate}[label=\textbf{Limitation \arabic*}, wide=\parindent]
 \item In the L4 Project~\cite{DissertationKelvinFowler} named entities were not represented in way which maintained multi-term relationships.
@@ -214,49 +207,47 @@ In this section we give an overview of the approach we take in this paper.
 We begin in Section~\ref{sec:overview.probdef} by formally defining the task we aim to address and then give a summary of our method in Section~\ref{sec:overview.approach}.
 
 \subsection{Problem Definition} \label{sec:overview.probdef}
-The task we aim to complete is effective ranking of relevant public domain documents based on a given government document.
+The task we aim to complete is effective ranking of relevant public domain documents based on a given source government document.
 
 The inputs are a source government document and set of target public domain documents.
-The desired output is a ranking of these target public domain documents in terms of relevance to the government document. These retrieved target documents will be used for comparison in the public domain comparison task prior to sensitivity review.
+The desired output is a ranking of these target public domain documents in terms of relevance to the government document. 
+These retrieved target documents will be used for comparison in the public domain comparison task prior to sensitivity review.
 
 % Math mode description of the task
 Given a source document $s \in S_C$ in a set of source documents, and a set of public domain target documents $T_C$, our goal is to produce a process $p(s) = Q$ which creates a query leading to an effective ranking of $T_C$ for the public domain comparison task.
-An effective ranking is characterised by relevant documents being retrieved above non relevant documents. This is therefore a high precision task, as reviewers are unlikely to read all retrieved documents. Thus the measures we associate with success of the final ranking are MAP, Mean Reciprocal Rank and Precision at 5.
+An effective ranking is characterised by relevant documents being retrieved above non relevant documents. This is therefore a high precision task, as reviewers are unlikely to read all retrieved documents. Thus the measures we associate with success of the final ranking are Mean Average Precision (MAP) , Mean Reciprocal Rank (MRR) and Precision at 5 (P\@5).
 The remainder of this section will give an overview of how we approach this task. 
 
 \subsection{Approach} \label{sec:overview.approach}
-\remove{refer to specific parts of the diagram}
-Figure~\ref{fig:approach} summarises our approach displaying the various steps needed to produce a learned model for use on future queries.
+In summary, our approach involves document analysis on source and target documents to produce queries and indexes. Following this, we use existing relevance judgements to learn a model using learning to rank based on existing relevance judgements. This learned model can then be used for ranking unseen target documents in response to unseen source documents.
+Figure~\ref{fig:approach} summarises our approach displaying the various steps needed to produce the learned model.
 % Refer to the diagram
 % Refer to specific parts of the diagram which will be handily labeled
 
 Given a source document and set of target documents we must analyse these in order to extract the information we are interested in.
-There is a common analysis step for both types of documents.
-% EMPHASISE THIS IF IT IS ADDRESSING A SOLULTION
-We extract named entities from documents. We are careful to ensure our technique does not split multi-word named entities in separate terms, addressing \textbf{Limitation 1}. This means there will be far less ambiguity when attempting to match named entities. \remove{maybe still not clear enough}
+There is a common analysis step for both types of documents. The source and target documents are analysed in bulk. We can see this in the parts labelled \textbf{\textit{A, B}} and \textbf{\textit{C}} in Figure~\ref{fig:approach}.
+
+We extract named entities from documents. We are careful to ensure our technique does not split multi-word named entities in separate terms, addressing \textbf{Limitation 1}. Specifically, any named entity which is longer than 1 word will be saved as such in both the index and query, meaning there will be far less ambiguity when attempting to match named entities.
+
 We also extract and resolve temporal entities to specific dates.
 In addition to these terms we calculate various types of focus time and include these in queries and the index.
 Finally, we extract the remaining terms for queries and indexing.
-For source documents, these extracted terms are used to form different queries.
-For target documents, these terms go into an index for matching during retrieval.
 
-The queries we produce from source documents have multiple parts.
-There is a sample query part which is used to obtain the pool of documents for reranking during learning to rank.
+For source documents, these extracted terms are used to form different queries, seen in \textbf{\textit{D}} of Figure~\ref{fig:approach}.
+For target documents, these terms go into an index for matching during retrieval, seen in seen in \textbf{\textit{E}} of Figure~\ref{fig:approach}.
+
+The queries we produce from source documents have multiple parts and we call these subqueries.
+There is a sample subquery which is used to obtain the pool of documents for reranking during learning to rank.
 There is also the various subqueries consisting of named entities, temporal entities and other terms which are used for defining the learning to rank features for reranking of the sample documents.
-These features include matches of various types of named entities and features which use temporal entities in different ways, addressing \textbf{Limitation 3}.
+These features include matches of various types of named entities and features which use temporal entities in different ways, addressing \textbf{Limitation 2}. An example of a complex query can be seen in Table~\ref{table:complexquery}.
 
-The features we define are all distinctly based on individual subqueries within our generated queries. This means that the learned model will effectively be a weighting model for the distinct query sections. This addresses \textbf{Limitation 4} by learning a model based on the specific task rather than pre-calculated features.
+The features we define are all distinctly based on individual subqueries within our generated queries. This means that the learned model will effectively be a weighting model for the distinct query sections. This addresses \textbf{Limitation 3} by learning a model based on the specific task rather than pre-calculated features.
 
-Due to a lack of a sufficient of amount relevance judgements on a collection of government source documents we produce a proxy test collection from an existing TREC ad-hoc test collection. This provides us with relevance judgements which we use for training, validation and testing of the learning to rank approach.
+Due to a lack of a sufficient of amount relevance judgements on a collection of government source documents we produce a proxy test collection from an existing TREC ad-hoc test collection. This provides us with relevance judgements which we use for training, validation and testing of the learning to rank approach. These are labelled \textbf{\textit{F}} in Figure~\ref{fig:approach}.
 
-Following the learning of these models from the training data we evaluate our learned approach on a small collection of government documents with associated relevance judgements for public domain documents.
+The produced queries and relevance judgements are passed to a learning to rank model as labelled \textbf{\textit{G}} in Figure~\ref{fig:approach}. The result is a learned model which can be applied to future retrieval. 
 
-\begin{figure*}
-\begin{center}
-\includegraphics[scale=0.5]{5yp.png}
-\end{center}
-\caption{\label{fig:approach} The Stages Involved in Producing A Learned Model \remove{label the components in this diagram, refer to in 3.2}}
-\end{figure*}
+Following the learning of this model from the training data we evaluate our learned approach on a small collection of government documents with associated relevance judgements for public domain documents.
 
 Having given an overview of the method we use in this paper we now give a more concrete explanation of our steps. First we describe the document analysis process used for indexing and query production.
 
@@ -267,6 +258,61 @@ These are analysis steps which are common to both source and target documents, h
 The reason for this common analysis is so that terms in queries and indexed documents match during querying. So, if we wish to use some artefact to form a subquery we must ensure the same analysis has taken place on all target documents.
  
 We now describe the individual components we extract from documents.
+
+\subsection{Named Entities}
+We have seen from Section~\ref{sec:background} that named entities are a valuable artefact to extract from documents for query formulation. Encouraged by the results from~\cite{DissertationKelvinFowler} we continue to use named entities in queries
+
+In this project named entities are extracted using the Stanford NLP NE Recogniser~\cite{manning2014stanford}. We extract 3 types of named entities: people, locations and organisations. We are careful to maintain multi word named entities to avoid loss of information addressing \textbf{Limitation 1}. For example, there are likely many mentions of ``Hillary'' and ``Clinton'', but far fewer mentions of ``Hillary Clinton''.
+
+There may be many different named entities in a document and some may be mentioned more than others.
+As such we use TF-IDF to calculate which terms in our document are most important.
+
+\subsection{Temporal Entities}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Temporal Entity 	& Resolution 					\\ \hline
+Last Thursday 		& 14/04/1988   \\ 
+Today				& 18/04/1988 \\ 
+1988 				& 1988  \\ 
+January 			& 01/1988   \\ 
+Sunday 				& 13/04/1988   \\ 
+Tonight				& 18/04/1988 \\ 
+This Year 			& 1988   \\ \hline \hline
+Median Date			& 13/04/1988 \\
+Vf Year				& 1988	\\
+Vf Month			& 04/1988	\\	
+Vf Day				& 18/04/1988	\\ \hline
+\end{tabular}
+\caption{Examples of Resolved Temporal Entities and Subsequent Calculated Focus Times For A Document Created on Monday 18/04/1988}
+\label{table:focustimes}
+\end{table}
+As discussed in Section~\ref{sec:background}, ~\cite{strotgen2012identification} and~\cite{jatowt2013estimating} show that inclusion of temporal entities is beneficial in other tasks. Further, we specifically list the lack of use of temporal entities in our previous approach as \textbf{Limitation 2}.
+
+Following this motivation, we extract and analyse temporal entities in documents to produce two variants of focus time, one based on median time and the other based on value frequency. We do not expect that untreated temporal entities will be of great use for retrieval as they will be very numerous and varied.
+
+Temporal entities were resolved using the Heideltime temporal tagger~\cite{strotgen2010heideltime}. This allows us to identify temporal entities in text such as ``last Thursday'' and resolve this reference the specific date in question. In order to do this resolution it is necessary to know the document creation date. 
+Examples can be seen in Table~\ref{table:focustimes}.
+
+We only consider 3 granularities of temporal entities: year references (\textbf{\textit{YY}}), month references(\textbf{\textit{YY-MM}}) and day references(\textbf{\textit{YY-MM-DD}}).
+
+Median focus time is calculated by taking all references to time in a document and ordering them from earliest to latest. We then take the median of this set of dates and resolve this median to its day granularity. We store this median focus date in queries and index as 3 separate terms, representing day ($MED_{day}$), month ($MED_{month}$) and year($MED_{year}$). For a source and target document to match on median focus year, only the $MED_{year}$ terms must match.
+For a month match both $MED_{month}$ and $MED_{year}$ must match and we require all 3 terms to match for an exact median focus day match.
+
+Value frequency focus time is calculated by counting references to specific years, months and days. This is inspired by the use of value frequency in~\cite{strotgen2012identification}. For our 3 granularities of temporal entities, all mention a year and so we count the year mentioned in each temporal entity. We take the most frequently occurring year references to be the $VF_{year}$.
+Only temporal entities of type \textbf{\textit{YY-MM}} and \textbf{\textit{YY-MM-DD}} can be used to count references to months and so these are used to calculate $VF_{month}$. Similarly, we use only \textbf{\textit{YY-MM-DD}} references to produce $VF_{day}$.
+
+We can see in Table~\ref{table:focustimes} examples of these focus times for an example set of temporal entities.
+ 
+\subsection{Additional Terms}
+In addition to named and temporal entities there are many other terms in a document. These provide valuable context for the reader, and as we have seen from our example in Table~\ref{table:example} would generally be necessary in a query to produce high quality results.
+
+After identifying named entities and temporal entities we can simply identify these other terms as those which are left over. We can tag these as belonging to the ``other'' set.
+
+It is worth noting that not all of these terms will be valuable to us and so we use TF-IDF in order to identify which terms are most important from a given document.
+
+Having explained our steps for the analysis of documents for the creation of queries and indexing, we now move on to explain our use of learning to rank in combination with complex queries.
 
 \begin{table*}[t]
 \centering
@@ -319,113 +365,26 @@ Guard}
 \label{table:complexquery}
 \end{table*}
 
-\subsection{Named Entities}
-We have seen from Section~\ref{sec:background} that named entities are a valuable artefact to extract from documents for query formulation. Encouraged by the results from~\cite{DissertationKelvinFowler} we continue to use named entities in queries
-
-% In this paper we will only consider named entities referring to persons, locations or organisations. 
-
-In this project named entities are extracted using the Stanford NLP NE Recogniser~\cite{manning2014stanford}. We extract 3 types of named entities: people, locations and organisations. We are careful to maintain multi word named entities to avoid loss of information addressing \textbf{Limitation 1}. For example, there are likely many mentions of ``Hillary'' and ``Clinton'', but far fewer mentions of ``Hillary Clinton''.
-
-There may be many different named entities in a document and some may be mentioned more than others.
-As such we use TF-IDF to calculate which terms in our document are most important.
-% Show proportion of top-k terms which are named entities?
-
-\subsection{Temporal Entities}
-\remove{what do you do in one sentence, what do you do abstractly, then give a concrete example using an example document}
-\remove{The description here of the analysis needs to be much clearer, introduce nice notation for median and vf focus times}
-\textbf{Limitation 3} specifically highlights the lack of use of temporal entities in our previous approaches to this task and~\cite{alonso2011temporal,jatowt2013estimating} show that inclusion of temporal entities is beneficial in other tasks.
-In order to include any sort of temporal information in our queries we must first retrieve this information from the source documents.
-
-Temporal entities were resolved using the Heideltime temporal tagger~\cite{strotgen2010heideltime}. This allows us to identify temporal entities in text such as ``last Thursday'' and resolve this reference the specific date in question. In order to do this resolution it is necessary to know the document creation date. 
-Examples can be seen in Table~\ref{table:focustimes}.
-
-% math mode version
-From a given document $D_{text}$ which is a bag of words we can extract and resolve all of the temporal entities. This gives us a temporal representation of this document, the set of all times in the document $D_{temp}$.
-
-% we dont expect just using these plain temporal entities to be good, why?
-It is a reasonable assumption that these specific times are not of great use in and of themselves, since they are so numerous and so granular that matching on them will not produce any interesting behaviour (we confirm this with results in Section~\ref{sec:results}). As such it seems that it would be helpful to perform some analysis on the temporal entities that occur in a document.
-
-% explain the focus time alternative
-We have opted for two approaches of calculating the focus time of a given document which contains temporal entities.
-
-The first is a calculation of the median of all times mentioned in the document. In order to calculate the median focus time all temporal references in a document are converted to their epoch offset equivalent (milliseconds from Jan. 1st 1970).
-This collection was then sorted and the median date was taken to be the focus time.
-This median time was then used to create 3 terms, a focus day, month and year.
-This allows for different granularities of matching.
-Two document which matches exactly on the median focus day are likely to be referring to very similar temporal entities within their text. The relationship will be weaker for month and year granularities.
-
-% Be inspired by heideltime paper for mathsy way to reperesent focus times.
-
-% The first, median focus time $FT_{med}$, simply sorts the temporal references in a document and takes the median, assuming this to be some indication of the time which a document refers to.
-% $FT_{med} = median()$
-    
-%why vf focus time?
-The second uses the notion of value frequency in order to calculate a focus time. In \cite{strotgen2012identification} value frequency is used as an indicator of the importance of temporal entities in a document, inspiring us to also use this measure.
-
-We consider three sets of temporal entities $Y, M, D$ 
-
-Y mentions years and contains every temporal entity which mentions a year.
-2010, may, and today all fit into this category as they all refer to a specific year. Last century does not fit in to this category.
-
-M and D are defined in similar ways.
-
-For all entities in Y, we count the occurrences of the various years mentioned and select this to be the vf focus year.
-
-For all entities in M, we count the occurrences of the various months mentioned and select this to be the vf focus year. These are specific months in years, i.e there will be a count for 03/89 and 03/88 as these are not the same month and documents could refer to both.
-
-Same story for D.
-
-
-% We want this to be a table which has times in it, then shows how these times become median focus times and vf focus times
-
-\begin{table}[t] 
-\centering
-\begin{tabular}{|c|c|}
-\hline
-Temporal Entity 	& Resolution 					\\ \hline
-Last Thursday 		& 14/04/1988   \\ 
-Today				& 18/04/1988 \\ 
-1988 				& 1988  \\ 
-January 			& 01/1988   \\ 
-Sunday 				& 13/04/1988   \\ 
-Tonight				& 18/04/1988 \\ 
-This Year 			& 1988   \\ \hline \hline
-Median Date			& \textbf{CALCULATE} \\
-Vf Year				& 1988	\\
-Vf Month			& 04/1988	\\	
-Vf Day				& 18/04/1988	\\ \hline
-\end{tabular}
-\caption{Examples of Resolved Temporal Entities and Subsequent Calculated Focus Times For A Document Created on Monday 18/04/1988}
-\label{table:focustimes}
-\end{table}
-
- 
-\subsection{Additional Terms}
-In addition to named and temporal entities there are many other terms in a document. These provide valuable context for the reader, and as we have seen from our example in Table~\ref{table:example} would generally be necessary in a query to produce high quality results.
-
-After identifying named entities and temporal entities we can simply identify these other terms as those which are left over. We can tag these as belonging to the ``other'' set.
-
-It is worth noting that not all of these terms will be valuable to us and so we use Tf-Idf in order to identify which terms are most important from a given document.
-
-Having explained our steps for the analysis of documents for the creation of queries and indexing, we now move on to explain our use of learning to rank in combination with complex queries.
-
 \section{Learning with Complex Queries} \label{sec:l2r}
 This section gives details on our method of using learning to rank to implicitly learn the importance of sections of queries formed from documents.
-The queries we formulate contain many distinct parts.
+The queries we formulate contain many distinct parts, which we refer to as subqueries.
 Unfortunately we do not know which parts of the query are most important for our task. Unlike Lee et al~\cite{GeneratingQueriesLee12} we wish to calculate this importance within the context of our specific task and datasets.
 
-Learning to rank uses relevance judgements and so, we can know that the learner will be trying to optimize retrieval performance rather than any other metric. If we were to use pre-calculated features we could be inferring relationships which are not true. Using learning to rank prevents any incorrect assumptions being factored into the model.
+Learning to rank uses relevance judgements and so, we can know that the learner will be trying to optimize retrieval performance rather than any other metric. If we were to use pre-calculated features we could be inferring relationships which are not helpful in our task. Using learning to rank prevents any incorrect assumptions being factored into the model.
 
-We specifically wish to use learning to rank as a method for understanding the implicit importance our subqueries and so we must define features which represent this.
-This is not possible using the standard bag of words model and so we reformulate our query into specific sections. This accomplished using complex query operators.
+We specifically wish to use learning to rank as a method for understanding the implicit importance of our subqueries and so we must define features which represent this.
+This is not possible using the standard bag of words model and so we reformulate our query into specific subqueries. This is accomplished by using complex query operators available in Terrier, as mentioned in Section~\ref{sec:background}.
 
-Complex query operators can be found in the Indri Complex Query language~\cite{strohman2005indri} and are present in Terrier~\cite{macdonald2012puppy}. They allow the formulation of queries with additional rules such as defining synonyms or adding term proximity limitations.
-We use the tagging features of the Indri Complex Query language which allow us to label individual sections of queries with different tags.
+We label terms with specific tags in order to form these subqueries.
 For example, we separate and label person named entities and organisation named entities and have tags for our various focus time calculations.
+
+An example of a complex query composed of various subqueries is shown in Table~\ref{table:complexquery}
 
 With these subqueries we can define features which are only calculated with respect to individual subqueries. Applying this learned model on subsequent queries is in effect applying a weighting scheme to the individual subqueries.
 
 Table~\ref{table:features} defines all of the features used in our learning to rank approach.
+
+% could do with some more explanation of how these features work.
 
 \begin{table*}[t] 
 \centering
@@ -449,24 +408,32 @@ $Bin_{VFmonth}$ & Vf Focus Month
 $Bin_{VFday}$ & Vf Focus Day 		
 & Binary Matching on most frequently mentioned day (YY-MM-DD).\\
 \hline
-$Bin_{medyear} $& Median Focus Year 	
+$Bin_{MEDyear} $& Median Focus Year 	
 & Binary Matching on Median Calculated Focus Year 		  \\ 
-$pBiL_{medmonth} $& Median Focus Month 	
+$pBiL_{MEDmonth} $& Median Focus Month 	
 &Matches of Same Adjacent Median Year, Month, Day Focus Terms (pBiL~\cite{pbil}) \\ 
-$pBiL_{medday} $& Median Focus Day 	
+$pBiL_{MEDday} $& Median Focus Day 	
 & Matches of Same Adjacent Median Year, Month, Day Focus Terms (pBiL~\cite{pbil}) \\ \hline
 \end{tabular}
 \caption{Features Used in this Paper}
 \label{table:features}
 \end{table*}
 
+Features $pBiL_{MEDmonth} $ and $pBiL_{MEDday} $ use pBiL~\cite{pbil} because they use the unordered window proximity complex query operator to enforce that the median focus terms must appear immediately next to each other in documents. The indexing step ensure that this is the case for all documents, and so this proximity rule just ensures that both terms appear and match the source document.
+
 \subsection{Sampling}
-\remove{need a better explanation of this sampling step and how the recall of the pool effect retrieval, whens and hows}
+The first step of learning to rank is to produce a sample of documents which can be re-ranked according to the defined features~\cite{macdonald2013whens}.
+
+Although our end goal is a high precision task, the retrieval of the sample of documents for reranking is a high recall task. We wish to have the maximum number of relevant documents in this sample as possible so that when feature scores are calculated they are being calculated on the maximum number of relevant documents. The more irrelevant documents in the sample, the more likely a non relevant documents is to end up at a high position in the results.
+
+We have control over the size of the sample of documents, and this is set automatically by Terrier to 1000. It is possible to achieve the best possible recall (100\%) by returning every document in the target collection during the sampling step. Although this means that all relevant documents will have their feature scores calculated and the overhead of calculating these scores for all other documents will be extremely high. There is therefore a balance to be struck between sample size and recall score.
+
+% need a better explanation of this sampling step and how the recall of the pool effect retrieval, whens and hows
 Since learning to rank is used to re-rank the top $k$ documents based on a certain set of features, it is important that this set of documents being re-ranked contains the highest possible number of relevant documents.
 We aim to maximise recall at the initial stage of learning to rank so that upon reranking based on features we can promote as many relevant documents as possible.
 
 Recall is a measure of how many of the relevant documents were retrieved.
-It is possible to achieve 100\% recall \remove{is this good} simply by retrieving all documents, however the calculation of feature scores across this amount of documents would take far too long for our needs. Why? Because we want fast retrieval~\cite{NEEDED} and people are only willing to wait so long on queries.
+It is possible to achieve 100\% recall simply by retrieving all documents, however this would require that all of these documents would need their feature scores calculated. Depending on the feature this could take a very long time, slowing down retrieval.
 
 We now move on to describe our experimental set-up and experiments conducted using the above explained method.
 
@@ -486,51 +453,80 @@ We begin by defining formally the research questions which we seek to answer thr
 \end{enumerate}
 
 \subsection{Test Collections}
+\begin{center}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Collection	 	& Documents 		\\ \hline
+AP88			& 79919				\\
+Reuters 2008	& 101253			\\
+Govt. Source 	& 2742				\\
+Govt. Source w/ Judgements & 20	\\ \hline
+\end{tabular}
+\caption{Test Collection Statistics}
+\label{table:statistics}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table*}
+\centering
+\begin{tabular}{|p{7cm}|p{7cm}|}
+\hline
+Govt. Source Document	 	& Proxy Source Document		\\ \hline
+Meeting with the Ambassador on March 3,
+President Correa expressed outrage at President Uribe for
+bombing his country, saying he expected the international
+community to condemn unprovoked aggression.  He said the GOE
+had no relationship with the FARC, and accepted the
+Ambassador's statement that the Manta FOL had not supported
+the Colombian military operation.  Correa plans to visit all
+countries bordering Colombia in the coming days to seek
+solidarity for its position.  The Foreign Minister departs
+March 3 to attend OAS sessions on the incident scheduled for
+March 4.						
+& More than 150 former officers of the
+overthrown South Vietnamese government have been released from a
+re-education camp after 13 years of detention, the official Vietnam
+News Agency reported Saturday.
+   The report from Hanoi, monitored in Bangkok, did not give
+specific figures, but said those freed Friday included an
+ex-Cabinet minister, a deputy minister, 10 generals, 115
+field-grade officers and 25 chaplains.				\\ \hline
+\end{tabular}
+\caption{Comparing Government Documents and Proxy Source Documents}
+\label{table:comparison}
+\end{table*}
+\end{center}
+
 % explain why last years test collection isn't suitable
-In the previous L4 Project~\cite{DissertationKelvinFowler}, a small test collection was manually created. The topics were queries formed from 20 government documents, each of which had an associated 20 relevant public domain news articles. 
-Because our approach in this research involves the use of learning to rank, we require a much larger collection of relevance judgements~\cite{NEEDED}. 
+In the previous L4 Project~\cite{DissertationKelvinFowler}, a small test collection was manually created. The topics were queries formed from 20 government documents, each of which had an associated 20 relevant public domain news articles from a collection of Reuters stories from 2008.
+The government documents came from a corpus of government documents.
+The target documents were from a corpus of Reuters news stories from 2008.
+Because our approach in this research involves the use of learning to rank, we require a much larger collection of relevance judgements than the 20 that we have from the L4 project. 20 source documents with 20 relevance judgements each is not enough to infer relationships needed for learning to rank.
 It was not feasible create more manual relevance judgements as this would have been a very time consuming task.
 Thus it was necessary to produce a test collection by some other means.
 
-% explain why we can use the proxy approach
-\remove{need some stronger evidence, analysis with numbers, give an example}
-
 Having analysed the government documents collection of source documents it became clear that these documents generally followed a similar structure of reporting events from the viewpoint of various embassies. These reports exist to inform a reader about events happening at specific times, involving people, organisations and locations.
 
-Now, news articles are very similar in nature to the government documents in our source collection, as they also seek to report on events, the difference being that the content of a news articles is necessarily already in the public domain.
+News articles are very similar in nature to the government documents in our source collection, as they also seek to report on events, the difference being that the content of a news articles is necessarily already in the public domain.
 This similarity suggests that it may be possible to use news articles as representative source documents for the generation of queries.
+
+In Table~\ref{table:comparison} we can see that government documents and our chosen corpus of proxy source documents follow a similar structure. Both example documents take a clear tone of reporting an event to another person, mentioning specific named entities and times.
 
 Unfortunately, we did not have access to relevance judgements which defined news document as being relevant to one another.
 Instead we chose to use the implicit relevance of documents to one another which are relevant for a common topic.
 
+For the TREC ad-hoc topics 51-100 there exists relevance judgements for a collection of public domain news articles. These are a collection of associated press documents from 1988 which can be found in TIPSTER disk 2. We will refer to this collection as the AP88 collection.
 Given an existing TREC ad-hoc topic there exists a set of relevant public domain news articles. If two articles are relevant for the same topic, it suggests there is some information overlap in these documents.
 
 Thus we made the assumption that if documents were relevant for the same topic then they were relevant to each other in our public domain comparison task.
 
-% explain in words how we make proxy
+Since we are only using AP88 as our test collection relevance judgements concerning any other documents were removed and ignored.
 
-Since we are only using AP88 \remove{this is not state before hand} as our test collection relevance judgements concerning any other documents were removed and ignored.
+The method described in Algorithm~\ref{alg:prox}. This method for generating a test collection from existing topics and query relevance judgements is inspired by a method described by Lee et al~\cite{GeneratingQueriesLee12} for choosing text segments from documents to generate queries from.
 
-If we take one of these proxy source documents S, the list of relevant target documents will include the original target document S. S must be removed from the relevance judgements.
-A document can not be relevant for the query generated from itself. This caveat allowed us to avoid any additional complex indexing strategies.
-
-The method described below for generating a test collection from existing topics and query relevance judgements are inspired by a method described by Lee et al~\cite{GeneratingQueriesLee12} for choosing text segments from documents to generate queries from. Lee et al ensure that the text segments align with the TREC topic descriptions, meaning the relevance judgements can be used, but we don't do that, \remove{so that's probably an issue.} 
-
-\remove{use an algorithm format here, will look better}
-
-We have a set $T_C$ of public domain documents.
-
-Let us take 1 query from the topic set, $ q \in Q $.
-
-There is a set of documents with judgements for $q, J_q \subseteq T_C$.
-
-There is set of documents which are relevant $R_q \subseteq J_q$.
-
-Let this $R_q$ become our new $S_C$, the collection of source documents from which we form queries.
-
-If we form a query $ Q_d $ from a document $ d $ in in $ S_C $ the we assume judgements of $ J_q \setminus d$ apply. 
-
-\paragraph{explain formally how we make proxy}
 % Explain the algorithm, write on paper to get right first.
 \begin{algorithm}
 \SetAlgoLined
@@ -558,59 +554,30 @@ If we form a query $ Q_d $ from a document $ d $ in in $ S_C $ the we assume jud
  If we form a query $ Q_d $ from a document $ d $ in in $ S_C $ the we assume judgements of $ J_q \setminus d$ apply
  }
  \caption{Generating a Proxy Test Collection From Existing Relevance Judgements}
+ \label{alg:prox}
 \end{algorithm}
 
-\paragraph{statistics}
+Having explained the formation of our proxy test collection we now give statistics on the test collections we use in this paper.
 We use several different collection of documents and queries in this work.
-Our proxy test collection is generated 1988 Associated Press (AP) news articles found in TIPSTER disk 2.
+Our proxy test collection is generated from 1988 Associated Press (AP) news articles found in TIPSTER disk 2.
 TREC-1 ad hoc topics 51-100 have relevance judgements for  TIPSTER disks 1\&2. We ignore all relevance judgements for documents outside of the 1988 AP Collection.
 
 The 1988 AP collection contains 79919 documents.
 
 Our method of producing source documents from this collection provided us with 2742 source documents.
-When creating a query from one of these source documents, that document is remove from the target collection and so retrieval using this collection only ever takes place with 79918 documents.
+When creating a query from one of these source documents, that document is removed from the target collection and so retrieval using this collection only ever takes place with 79918 documents.
 
 In addition to this proxy test collection we have a small collection of government documents with relevance judgements for public domain documents.
 
 This set of public domain documents are Reuters in 2008 and there are 101253 of them.
 
-We create queries from 20 government documents however we index 1018 documents for the purpose of calculating Tf-Idf scores for term importance.
-
-\begin{center}
-\begin{table}[H]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-Collection	 	& Documents 		\\ \hline
-AP88			& 79919				\\
-Reuters 2008	& 101253			\\
-Govt. Source 	& 2742				\\
-Govt. Source w/ Judgements & 20	\\ \hline
-
-\end{tabular}
-\caption{Test Collection Statistics}
-\label{table:statistics}
-\end{table}
-\end{center}
-
-\subsection{Verification Using Government Document Test Collection}
-In order to verify that our approach of using the proxy test we also use a small test collection which was created last year using documents which are representative of those considered sensitive. These are government documents. \remove{GIVE DETAILS}
+We create queries from 20 government documents however we index 1018 documents for the purpose of calculating TF-IDF scores for term importance.
 
 \subsection{Learning to Rank}
-\paragraph{Explain Learning to rank approach}
-Our learning to rank model is the Jforests implementation of LambdaMART  which uses multiple additive regression trees and is a combination of pointwise and listwise learning to rank approaches.~\cite{NEEDED}
+Our learning to rank model is the Jforests~\footnote{\url{https://github.com/yasserg/jforests/}} implementation of LambdaMART~\cite{lambdamart} which uses multiple additive regression trees and is a combination of pointwise and listwise learning to rank approaches.~\cite{macdonald2013whens}.
 
-\remove{give example of regression tree}
-
-% explain partitioning of data - whens and hows of learning to rank may be able to help
 In order to prevent over-fitting to training data during learning to rank we partitioned our test collection into training, validation and test sets.
-This was done with a 60/20/20 ratio.
-The splitting was performed by partitioning the initial topic set rather than the proxy test collection \remove{WHY?}.
-
-% \subsection{What are we looking for}
-% Likely, our strongest feature is the one which increases MAP the most, what if none of them increase MAP! This will be the feature sends relevant documents in the k sized sample towards the top. (map)
-% We may have some much weaker features which alter the rankings of the top few documents. These are also important as they will directly effect the results that are looked at first during manual inspection. (p.5 and mrr).
-
+This was done with a 60/20/20 ratio resulting in 1371 training source documents, 685 validation and 686 test. This follows suggestion from Macdonald et al~\cite{macdonald2013whens}.
 
 \section{Experimental Results} \label{sec:results}
 In this section we address \textbf{RQ1} and \textbf{RQ2} which are evaluated on the AP88 collection with proxy relevance judgements.
@@ -620,10 +587,8 @@ In this section we address \textbf{RQ1} and \textbf{RQ2} which are evaluated on 
 This section covers \textbf{RQ1} by investigating how we can build a sample query which gives us high recall. We need a high recall sample of documents for re-ranking based on various features.
 Additionally, we are concerned with the time it takes to perform this initial query step, as users are only willing to wait for search results for so long~\cite{brutlag2009speed}.
 
-% Explain what experiments we are doing
-\remove{use present tense}
 Using the system of subqueries discussed in Section~\ref{sec:l2r}, we now have complete control over the terms which will be used to obtain this sample pool of documents for reranking. We will call this subquery the \textbf{sample subquery}.
-The experiments in this section deal with altering the contents of this sample subquery to obtain the best recall scores possible while maintaining efficiency.
+The experiments in this section deal with altering the contents of this sample subquery to obtain the best recall scores possible while maintaining efficiency. As discussed in Section~\ref{sec:l2r}, we require a high recall sample in order to calculate feature scores on as many relevant documents as possible.
 We alter the number of terms in the sample subquery and we also use TF-IDF weights on each term.
 The number of terms is altered by taking the top k terms when ordered by TF-IDF score calculated over the AP88 collection.
 In addition, we alter the retrieval model used when obtaining this sample to ensure we have chosen the model which gives the highest recall.
@@ -633,6 +598,7 @@ We expect that having more terms in the sample subquery will improve recall scor
 
 % We expect that just using other terms would be bad
 % Just using named entities would be bad -- for recall.
+% Can do an experiment to show this, on saturday/sunday if you want.
 
 % Experiment Pre-amble
 We report recall scores averaged over 1371 source documents in the training partition of the proxy test collection. Recall is calculated using the associated proxy relevance judgements.
@@ -656,7 +622,7 @@ BM25 			& 0.5758 				\\ \hline
 \label{table:recallmodel}
 \end{table}
 
-We see from Table~\ref{table:recallmodel} that DPH~\cite{NEEDED} provides the highest recall score of the 5 retrieval models we test. Given this result, we use DPH as the retrieval model for the following experiments which alter the terms used in the sample subquery.
+We see from Table~\ref{table:recallmodel} that DPH provides the highest recall score of the 5 retrieval models we test. Given this result, we use DPH as the retrieval model for the following experiments which alter the terms used in the sample subquery.
 
 % Query Size Unweighted
 We now investigate which terms we should use in our sample subquery in order to achieve maximum recall within a reasonable time. We score each term in the source document with its TF-IDF score with respect to the entire collection and sort these from highest to lowest. We take the top $k$ terms under this scoring system and report the results in Table~\ref{table:sample_size_uw}.
@@ -710,11 +676,10 @@ All 			& 0.6904 	& 0.4856    	          	\\
 
 We see from Table~\ref{table:sample_size_w}, that this markedly improves the results of various sizes of sample subquery, with the 250 term subquery performing best in terms of recall. Again, as expected the smallest query is performed fastest on average.
 
-We notice, however that although the 100 term sample subquery is produces a slightly worst recall than \textit{All} and \textit{250}, it is completed in less that half of the average time. This is important to us, as sampling is only the first step in learning to rank.
-The calculation of subsequent features can be a time intensive task~\cite{NEEDED} and so a fast sampling stage is desirable.
+We notice, however that although the 100 term sample subquery is produces a slightly worst recall than \textit{All} and \textit{250}, it is completed in less that half of the average time. This is important to us, as sampling is only the first step in learning to rank, after which we must calculate feature scores over all retrieved documents. The decrease in recall between the weighted 250 term subquery and the 100 term subquery is not statistically significant under the student's t-test for p-value of 0.05. This indicates that using this much faster query does not significantly effect recall.
 
 % Conclusion on this research question.
-The conclusions we draw from the data reported with regards to \textbf{RQ2} is that more terms in the sample subquery seems to produce improved recall scores, up to around 250 terms. We also see significant increases in recall by weighting terms in our sample subquery using TF-IDF scores. Although this 250 term weighted query produces the highest recall out of all of our experiments, it takes more the double the average time to execute compared to a 100 term query.
+The conclusions we draw from the data reported with regards to \textbf{RQ1} is that more terms in the sample subquery seems to produce improved recall scores, up to around 250 terms. We also see significant increases in recall by weighting terms in our sample subquery using TF-IDF scores. Although this 250 term weighted query produces the highest recall out of all of our experiments, it takes more the double the average time to execute compared to a 100 term query.
 For this reason we conclude that a 100 term weighted sample subquery issued under DPH produces sufficient recall in an acceptable time for the sample section of learning to rank.
 
 % Link to Next Section
@@ -726,52 +691,14 @@ We now investigate feature importance, in response to \textbf{RQ2}. In order to 
 In addition we analyse the distributions of our various features in order to predict what performance we might expect.
 
 % what are the experiments
-For all of these experiments, we fix the sampling subquery to be the top 100 terms based on their TF-IDF score. These terms are weighted with this TF-IDF score and the retrieval model for the sample subquery is DPH. This is based on the findings from \textbf{RQ1}, which suggest that this approach is effective and efficient.
+For all of these experiments, we fix the sampling subquery to be the top 100 terms based on their TF-IDF score. These terms are weighted with this TF-IDF score and the retrieval model for the sample subquery is DPH. This is based on the findings from \textbf{RQ1}, which suggests that this approach is effective and efficient.
 
-Our experiments will examine the effect on precision that reranking based on these features has. Learning to rank will be training on the set of training source documents from the generated proxy AP88 source collection. We also use a validation set of source documents from this collection to prevent overfitting.
+Our experiments will examine the effect on precision that reranking based on these features has. Learning to rank will be trained on the set of training source documents from the generated proxy AP88 source collection. We also use a validation set of source documents from this collection to prevent over-fitting.
 The results reported are here are the retrieval performance scores from applying the learned model to retrieval on the test partition of the AP88 source document collection.
 
 We report all of these results in Table~\ref{table:rq2_results}.
 
-% what are our expectations?
-% Named Entities
-We expect that named entities will help.
-Why? because look at the distribution graphs.
-Relevant documents are more likely to have high tf scores when matching on people, places and organisations.
-
-% Temporal Entities
-We do not expect that explicit matching on individual temporal entities will be an effective feature in learning to rank. For any given documents there are going to be many temporal entities. These will be far too varied and numerous for explicit matching to improve results.
-
-% Focus times
-Our focus time calculations on the other hand, could offer some improvement when used as a feature. It is likely that if two documents focus on the same time then they will be relevant to each other.
-Median focus time will be helpful in identifying documents which mention distinct dates as the median will lie in the centre.
-Value frequency calculated focus time will be helpful for boosting the scores of documents which make reference to many of the same dates as the source document.
-Our training collection only consists of documents from 1988 and so there may be an issue involving the focus date being skewed towards this date.
-We can see this from ... there is going to be excessive amounts in 1988 etc.
-
 All documents in our test collection for training are likely to have a similar focus year, since they are all documents from 1988. This means that our $VF_{year}$ feature is likely perform poorly in comparison to a collection which references many different years.
-
-\paragraph{expectations backed up by distribution graphs}
-\remove{i had been looking at the wrong things}
-\remove{reference the method you use to produce these graphs}
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{persons.png}
-\end{center}
-\caption{\label{fig:distribution} Feature Distribution over All Documents vs Relevant Documents}
-\end{figure}
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{orgs.png}
-\end{center}
-\caption{\label{fig:distribution} Feature Distribution over All Documents vs Relevant Documents}
-\end{figure}
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{locs.png}
-\end{center}
-\caption{\label{fig:distribution} Feature Distribution over All Documents vs Relevant Documents}
-\end{figure}
 
 % Define a baseline
 Our baseline for the following experiments will be the performance of the sample subquery which is obtained before re-ranking. This allows us to see the impact on performance the re-ranking based on different features has.
@@ -783,24 +710,37 @@ We can use the sample subquery to define a feature, $DPH_{sample}$, which is the
 
 % Named Entity Features
 The results of using named entities based features are not promising on the proxy test collection.
-Rather than improve precision, the results are actually degraded. \remove{is this significant}.
-What exactly is the TF feature on the different types of named entities.
+Rather than improve precision, the results are actually degraded.
 We take an individual type of named entity and for this subset of terms we calculate the TF (or other measure) score.
 Our intuition is that documents with a higher tf score for the given subquery are more likely to be relevant to the source document.
 
-We can see an example of a proxy source document which exhibits this relationship in Figure~\ref{}
+We can see an example of a proxy source document which exhibits this relationship in Figure~\ref{fig:gooddist}. This is the distribution of TF (term frequency) score for the person named entity subquery for all target documents versus relevant target documents. We can see that there is a clear indication that relevant documents are more likely to have a high TF score for this subquery.
 
-What we see is that relevant documents are more likely to have a high tf score with respect to the person subquery.
-% include image of the really nice distribution graph
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{single.png}
+\end{center}
+\caption{\label{fig:gooddist} Feature Distribution over All Documents vs Relevant Documents for a Single Source Document, TF scoring for Person Named Entity Subquery}
+\end{figure}
 
+What is unfortunate is that this distribution which suggest these features would be successful does not carry over when we plot the same distribution over all of the training documents as can be seen in Figure~\ref{fig:distribution}. Both Figures x and y are only plotted on the persons named entity subquery, however a similar picture can be seen for organisations and locations.
 
-What is unfortunate is that this distribution which suggest these features would be successful does not carry over when we plot the same distribution over all of the training documents as can be seen in Figure~\ref{}. Both Figures x and y are only plotted on the persons named entity subquery, however a similar picture can be seen for organisations and locations.
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{persons.png}
+\end{center}
+\caption{\label{fig:distribution} Feature Distribution over All Documents vs Relevant Documents}
+\end{figure}
+
+Considering the distribution seen in this graph, we do not expect that our named entity features will show any improvement over our baseline.
+
+The distribution graphs shown in Figures~\ref{fig:gooddist} and~\ref{fig:distribution} are produced using  kernel density estimate from Seaborn~\footnote{\url{https://seaborn.pydata.org/index.html}}. They show a an estimated probability density function for the given data. The area under the graph between any two x values is the probability of a TF score in that range of x values.
 
 % Temporal Entities
-We expect that binary matching on individual temporal terms will not be a helpful feature.
+We expect that binary matching on individual temporal terms will not be a helpful feature as the times are very numerous and varied.
 
 % Focus Times
-We suspect that to make use out of temporal entities we must 
+We suspect that to make use out of temporal entities we must use the focus time features which we calculated. Unfortunately, since the training collection is only from AP88, it is highly likely that the majority of focus years will 1988, meaning this feature may not be particularly helpful either. In fact, 1987 and 1988 composed x\% of the median focus years and 87\% of the value frequency focus years.
 
 \begin{center}
 \begin{table}[H]
@@ -827,8 +767,6 @@ $DPH_{sample},TF_{loc},TF_{org}$
 & 0.1843  	& 0.6139   	 	& 0.4023	\\ 
 $DPH_{sample}, TF_{person}, TF_{org},TF_{loc} $ 				
 & 0.1553 		  & 0.6004   	 	& 0.3948	      \\
-$DPH_{sample}, TFIDF_{person}, TFIDF_{org},TFIDF_{loc} $ 				
-& 0.1842 		  & 0.6087   	 	& 0.4105	      \\ \hline
 $ DPH_{sample}, Bin_{time} $	
 & 0.1885 		  & 0.6213   	 	& 0.4134	      \\ \hline
 $DPH_{sample},Bin_{VFyear},Bin_{VFmonth},Bin_{VFday}  $ 	
@@ -848,20 +786,19 @@ $ DPH_{sample},TF_{person}, TF_{org},TF_{loc},Bin_{VFmonth}  $
 \end{table}
 \end{center}
 
-\remove{bold best results}
+% Named Entity Failure Analysis
+Let us examine the per query results of precision at 5 for the named entity query which degrades P.5 the least. This is the query using the $DPH_{sample}, TF_{person}$.
 
-\remove{can we do signifigance testing}
+% Failure analysis
+\sloppy QAP881130-0167 increased from 0.2 to 0.8 using both .$DPH_{sample}, TF_{person}$ as features.
+Let us examine this document and the returned results in greater detail.
+The source document AP881130-0167 is describes environmental promises in the 1988 presidential campaign. The person named entities include George Bush and Michael Dukakis.
+Comparing the top 5 results of $DPH_{sample}$ and $DPH_{sample}, TF_{person}$ only one new document is added. This document is concerned with the environment however none of the person named entities overlap. This leads us to believe that this named entity feature does not contribute to effective reranking is merely adds noise. Although the added document was relevant the addition was clearly due to any effectiveness of our feature.
 
-\paragraph{comparison to expectations -- likely lower}
+% Speak about results.
 Our results do not show any increase versus the baseline results, which indicates that reranking based on the features is not helpful in this instance.
-In contrast to our feature distribution graphs, this is somewhat surprising. We expected that with more relevant documents obtaining higher feature scores, especially for named entity features, the learned model would reflect this.
-It may be the case that the features introduce too much noise and the distinction in score between relevant and non-relevant docs is too great.
 
-\paragraph{failure analysis - why didn't it work}
-We can inspect some individual examples of queries which performed better with the use of these features.
-Specifically a good example is ... \remove{give an example of a query which performed well.}
-It didn't work because the feature distributions don't show any correlation over the full collection.
-
+In summary, the features we define all degrade precision on the retrieved target documents. As such we cannot confidently decide which query component is most important as it appears that all of the features we defined exhibit no clear relationship to relevance.
 
 % Failure Analysis - Look at an Example Document
 % Use precision at 5 for these tests.
@@ -869,9 +806,6 @@ It didn't work because the feature distributions don't show any correlation over
 
 \section{Evaluation on Government Documents} \label{sec:RQ3}
 In this section we show our results when evaluating our methods on a test collection composed of government documents with relevant public domain documents.
-
-% What Sampling step and why?
-Again, we continue to use the 100 Weighted Terms sampling step.
 
 % What features and why?
 With no clear combination of features that performs exceedingly well we repeat some of the above experiments.
@@ -885,25 +819,25 @@ The performance of the bag of words named entity query in the L4 Project was a s
 
 \begin{table}[h]
 \centering
-\begin{tabular}{l|ccc}
+\begin{tabular}{|l|ccc|} \hline
 Query Type 		& MAP 		& MRR 		& P.4 		\\ \hline
 All Terms 		& 0.4554 	& 0.8500  	& 0.6750   	\\
-Named Entities 	& 0.3979 	& 0.7526 	& 0.5875    
+Named Entities 	& 0.3979 	& 0.7526 	& 0.5875    \\ \hline
 \end{tabular}
 \caption{Results of Evaluation from L4 Project}
 \label{table:lastyears}
 \end{table}
 
 We cannot use the results from Table~\ref{table:lastyears} as a baseline when performing the evaluation in this section using our new techniques. 
-This is because we use a subset of the source and target collection due to time constraints. The test collection statistics are reported in Table~\cite{NEEDED}.
+This is because we use a subset of the source and target collection due to time constraints. The test collection statistics are reported in Table~\ref{table:statistics}.
 As such, we report the results of using bag of words queries on these test collections in Table~\ref{table:rq3baseline}. Our use of named entities has, however, changed slightly as we now maintain multi word named entities, as discussed in Section~\ref{sec:components}.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{l|cccc}
+\begin{tabular}{|l|cccc|} \hline
 Query Type 		& MAP 		& MRR 		& P.5 		& Recall	\\ \hline
 All Terms 		& 0.4337 	& 0.7988  	& 0.5700	& 0.8299   	\\
-Named Entities 	& 0.3863 	& 0.7052 	& 0.4600    & 0.9746
+Named Entities 	& 0.3863 	& 0.7052 	& 0.4600    & 0.9746	\\ \hline
 \end{tabular}
 \caption{The same evaluation, but on this years data}
 \label{table:rq3baseline}
@@ -911,28 +845,28 @@ Named Entities 	& 0.3863 	& 0.7052 	& 0.4600    & 0.9746
 
 We define the results of Table~\ref{table:rq3baseline} as a baseline because they represent our previous understanding of the task.
 
-Our experiments will follow a similar structure to those in Section~\ref{sec:RQ2}, reporting the results of the sample subquery followed by the changes observed when reranking based on various features during learning to rank. We use the same learned models from the AP88 data as in Section~\ref{sec:rq2}. Again, this is because we do not have sufficient training data in the government document test collection.
+Our experiments will follow a similar structure to those in Section~\ref{sec:RQ2}, reporting the results of the sample subquery followed by the changes observed when reranking based on various features during learning to rank. We use the same learned models from the AP88 data as in Section~\ref{sec:RQ2}. Again, this is because we do not have sufficient training data in the government document test collection.
 
 % what do we expect
-From analysing the result of Section~\ref{sec:rq2} we do not expect to see any significant increase in results when using our new features.
+From analysing the result of Section~\ref{sec:RQ2} we do not expect to see any significant increase in results when using our new features.
 We are unsure how the sample subquery will perform, as it may prove to be a better alternative bag of words query than those investigated in the L4 Project.
 
-In Table~\ref{wikileaks_results} we report the results of using our learned models on the government test collection. Again the first row represents the performance of the sample subquery alone with no feature based reranking.
+In Table~\ref{wikileaks_results} we report the results of using our learned models on the government test collection. Again the first row represents the performance of the sample subquery alone with no feature based reranking. 
 
-% results on wikileaks collection
-Recall does not change across the following results, it is always 1.
+The sample subquery used is again the 100 term TF-IDF weighted query as tested in Section~\ref{sec:RQ1}. This produces 100\% recall for all source documents in the government document collection, which is an improvement compared to the baseline results in Table~\ref{table:rq3baseline}.
+
 \begin{center}
 \begin{table}[H]
 \centering
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{l|ccc}
+\begin{tabular}{|l|ccc|}
 \hline
 Feature Set	 			 & MAP 		& MRR  		& P@5  		\\ \hline
-None		   			 & 0.5842 	& 0.8375    & 0.6500  	\\ \hline \hline
-Sample DPH		   		 & 0.5547	& 0.8667    & 0.6100  	\\ 
-Sample DPH, TF NE		 & 0.5013	& 0.8083    & 0.5700  	\\ 
-Sample DPH, VF Month     & 0.5541	& 0.8417    & 0.6300    \\ 
-Samps DPH,TF NE,VF Month & 0.5339	& 0.7517	& 0.6100	\\ 
+None		   			 & 0.5842 	& 0.8375    & 0.6500  	\\ \hline
+$DPH_{sample}$ 		   	 & 0.5547	& 0.8667    & 0.6100  	\\ 
+$DPH_{sample},TF_{person}, TF_{org},TF_{loc}$		 & 0.5013	& 0.8083    & 0.5700  	\\ 
+$DPH_{sample}, Bin_{VFmonth}$     & 0.5541	& 0.8417    & 0.6300    \\ 
+$DPH_{sample},TF_{person}, TF_{org},TF_{loc}, Bin_{VFmonth}$ & 0.5339	& 0.7517	& 0.6100	\\ \hline
 \end{tabular}%
 }
 \caption{Learning to Rank with Various Feature Combinations on Real Government Documents Collection}
@@ -940,54 +874,25 @@ Samps DPH,TF NE,VF Month & 0.5339	& 0.7517	& 0.6100	\\
 \end{table}
 \end{center}
 
-Inspecting Table~\ref{wikileaks_results} we see that, in comparison to the bag of words queries tested in Table~\ref{table:rq3baseline}, there is an increase over all reported measures.
+Inspecting Table~\ref{wikileaks_results} we see that, in comparison to the bag of words queries tested in Table~\ref{table:rq3baseline}, there is an increase over all reported measures when simply performing the sample subquery. Unfortunately, using any features for reranking degrades the performance compared to this sample subquery. We suspect this is because the features chosen do not have a relationship in the training data necessary for identifying relevant documents.
+
 We are specifically interested in the performance of the P@5 measure. This is the precision of the top 5 documents returned, which are likely the first that manual reviewer would examine.
 Comparing the all terms bag of words query with the sample subquery we find that neither is statistically significant when using the two tailed students t-test with a p-value of 0.05.
 
-What about MAP, does that increase significantly:
-For the sample subquery map does increase significantly when using the two tailed students t-test with a p-value of 0.05 vs the named entity bag of words query.
-This means that we at the very least have a new way to get results.
+For the sample subquery map does increase significantly when using the two tailed students t-test with a p-value of 0.05 when compared with the named entity bag of words query.
 
-\textbf{per query failure analysis}
-Lets first do per query improvements over the 20 queries.
-No queries improved when using Sample DPH and TF NE as features.
-
-
-\remove{tokyo query has very nice distributions for org and loc, do we have any results that show this improved over baseline}
-We can analyse individual queries to gain a better understanding of why we did not achieve an increase in performance when using the features.
-
-In order to answer this question we must consider what is a baseline for good performance. We assume a baseline as being the retrieval scores of simple doing retrieval using a full document as a query on a completely plain index with no additional information in it.
-
-% use of best features
-In Section~\ref{sec:RQ2} we evaluated which features we deemed most important for our retrieval task. In this section we show retrieval results when combining these features.
-We test this on our existing test collection in addition to our test collection from last year.
+To summarise the results of this section, our approach of using a learned model did not improve precision when reranking our sample of documents. This is in line with our findings in Section~\ref{sec:RQ2}. We do, however, find that using a 100 term sample subquery weighted with TF-IDF provides an increase in precision and recall over baselines. This means that for future defined features we have a well performing sample subquery to use for the first stage of learning to rank.
 
 \section{Conclusions} \label{sec:conclusion}
-\remove{recap aim}
-Our aim in this research was discover if learning to rank could be used to improve the performance of retrieving public domain documents from queries generated from source documents.
+Our aim in this research was discover if learning to rank could be used to improve the performance of retrieving public domain documents from queries by implicitly calculating the importance of specific subqueries generated from a source document.
 
-We found that we can produce a high recall sample of documents by using the top 100 terms from a source document under a TF-IDF weighting scheme.
+Of the features we defined none showed any improvement over the baseline of the learning to rank sample subquery. Having examined the data we conclude that our feature selection was poor and distributions graphs extracted from the training data could have predicted this lack of performance for the named entity features, however this relationship was not recognised until very late in the project.
 
-Of the features we defined none showed any improvement over the baseline of the learning to rank sample subquery. Having examined the data we conclude that our feature selection was poor and distributions graphs extracted from the training data could have predicted this lack of performance for the named entity features.
+We found that we can produce a high recall sample of documents by using the top 100 terms from a source document under a TF-IDF weighting scheme. This sample subquery can be used as the basis for further research involving learning to rank with generated queries from source documents.
 
-\paragraph{what did we learn}
-We probably should have investigated additional features
-We probably should have made use of proximities and other features using the complex query operators.
-We probably could have predicted that our features wouldnt work had we run proper analysis on them. - Discovered this too late to do any additional experiments.
+In future work we would investigate the performance of additional defined features. Especially we would like to investigate the use of document creation time more heavily. Complex query operators also offer interesting routes for defining features which focus specifically on term proximities. We could also use synonyms as part of the complex query framework. Additionally, more analysis could have been performed on the training test collection to identify which features showed promise. The production of much larger test collection using existing government documents would also be highly beneficial in identifying appropriate features for learning to rank.
 
-We presented an investigation into using learning to rank to effectively learn query formulations when producing queries from government documents. Of the features we defined, none showed improvement over a baseline of using the top 100 terms weighted with tf-idf as a query.
-The relationships are not clear enough.
-
-
-The more features you add, the worse the results get.
-Suggests that the features add too much noise to be useful.
-
-% Improvements
-More careful feature selection.
-First investigation.
-
-% Future Work
-In the future we would like to incorporate knowledge base linking into the process in order to flesh queries out with additional details and synonyms for named entities. This could provide an excellent query expansion opportunity.
+Of topics not investigated, we could also investigate the use of knowledge bases for the improving the use of named entities.
 
 \vskip8pt \noindent
 {\bf Acknowledgements.}
